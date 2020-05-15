@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/jinzhu/gorm"
-	Config "github.com/pascallin/go-web/config"
-	Models "github.com/pascallin/go-web/models"
+	"github.com/joho/godotenv"
+	Databases "github.com/pascallin/go-web/databases"
 	Routes "github.com/pascallin/go-web/routes"
 )
 
@@ -13,14 +10,18 @@ var err error
 
 func main() {
 
-	Config.DB, err = gorm.Open("mysql", Config.DbURL(Config.BuildDBConfig()))
+	// load .env
+	godotenv.Load()
 
+	// connect mysql
+	Databases.InitMysqlDatabase()
+	defer Databases.MysqlDB.Close()
+	// connect mongodb
+	mongo, err := Databases.NewMongoDatabase()
 	if err != nil {
-		fmt.Println("statuse: ", err)
+		panic(err)
 	}
-
-	defer Config.DB.Close()
-	Config.DB.AutoMigrate(&Models.Todo{})
+	defer mongo.Close()
 
 	r := Routes.SetupRouter()
 
