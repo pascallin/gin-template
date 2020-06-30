@@ -2,9 +2,9 @@ package databases
 
 import (
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/pascallin/go-web/models"
-	_ "github.com/go-sql-driver/mysql"
 	"os"
 )
 

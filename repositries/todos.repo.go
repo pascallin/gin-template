@@ -2,18 +2,19 @@ package repositries
 
 import (
 	"fmt"
-	"github.com/pascallin/go-web/models"
+
 	"github.com/pascallin/go-web/databases"
+	"github.com/pascallin/go-web/models"
 )
 
-func GetAllTodos(todo *[]Models.Todo) (err error) {
-	if err = databases.MysqlDB.Find(todo).Error; err != nil {
+func GetAllTodo(todo *[]Models.Todo) (err error) {
+	if err = databases.MysqlDB.Order("created desc").Find(todo).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func  CreateATodo(todo *Models.Todo) (err error) {
+func CreateATodo(todo *Models.Todo) (err error) {
 	if err = databases.MysqlDB.Create(todo).Error; err != nil {
 		return err
 	}

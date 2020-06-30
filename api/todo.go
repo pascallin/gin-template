@@ -1,4 +1,4 @@
-package Controllers
+package api
 
 import (
 	"github.com/pascallin/go-web/repositries"
@@ -8,9 +8,9 @@ import (
 	Models "github.com/pascallin/go-web/models"
 )
 
-func GetTodos(c *gin.Context) {
+func GetTodoList(c *gin.Context) {
 	var todo []Models.Todo
-	err := repositries.GetAllTodos(&todo)
+	err := repositries.GetAllTodo(&todo)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {

@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/pascallin/go-web/databases"
-	models "github.com/pascallin/go-web/models"
+	"github.com/pascallin/go-web/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func GetTasks() []*models.Task {
-	var results []*models.Task
+func GetTasks() []*Models.Task {
+	var results []*Models.Task
 	ctx := context.Background()
 
 	condition :=  bson.D{}
@@ -30,7 +30,7 @@ func GetTasks() []*models.Task {
 	defer cur.Close(ctx)
 	for cur.Next(ctx) {
 		// create a value into which the single document can be decoded
-		var task models.Task
+		var task Models.Task
 		err := cur.Decode(&task); if err != nil {
 			return nil
 		}
@@ -40,8 +40,8 @@ func GetTasks() []*models.Task {
 	return results
 }
 
-func GetTaskById(id primitive.ObjectID) *models.Task {
-	var task models.Task
+func GetTaskById(id primitive.ObjectID) *Models.Task {
+	var task Models.Task
 	condition := bson.D{{"_id",id}}
 	err := databases.MongoDB.DB.Collection("tasks").FindOne(context.Background(), condition).Decode(&task)
 	if err != nil {
@@ -50,7 +50,7 @@ func GetTaskById(id primitive.ObjectID) *models.Task {
 	return &task
 }
 
-func CreateTask(task *models.Task) *models.Task {
+func CreateTask(task *Models.Task) *Models.Task {
 	ctx := context.Background()
 	insertResult, err := databases.MongoDB.DB.Collection("tasks").InsertOne(ctx, task)
 	if err != nil {
@@ -60,7 +60,7 @@ func CreateTask(task *models.Task) *models.Task {
 	return task
 }
 
-func UpdateTask(id primitive.ObjectID, task *models.Task) *models.Task {
+func UpdateTask(id primitive.ObjectID, task *Models.Task) *Models.Task {
 	ctx := context.Background()
 	filter := bson.D{{"_id", id}}
 	update := bson.M{
@@ -73,7 +73,7 @@ func UpdateTask(id primitive.ObjectID, task *models.Task) *models.Task {
 	fmt.Printf("%v\n", filter)
 	fmt.Printf("%v\n", update)
 
-	var updatedTask models.Task
+	var updatedTask Models.Task
 	err := databases.MongoDB.DB.Collection("tasks").FindOneAndUpdate(ctx, filter, update, &opt).Decode(&updatedTask)
 	if err != nil {
 		return nil

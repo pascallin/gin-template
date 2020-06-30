@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	Databases "github.com/pascallin/go-web/databases"
-	Routes "github.com/pascallin/go-web/routes"
+	"github.com/pascallin/go-web/databases"
+	"github.com/pascallin/go-web/routes"
 )
 
 var err error
@@ -14,10 +14,10 @@ func main() {
 	godotenv.Load()
 
 	// connect mysql
-	Databases.InitMysqlDatabase()
-	defer Databases.MysqlDB.Close()
+	databases.InitMysqlDatabase()
+	defer databases.MysqlDB.Close()
 	// connect mongodb
-	mongo, err := Databases.NewMongoDatabase()
+	mongo, err := databases.NewMongoDatabase()
 	if err != nil {
 		panic(err)
 	}

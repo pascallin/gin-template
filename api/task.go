@@ -1,10 +1,10 @@
-package Controllers
+package api
+
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	Models "github.com/pascallin/go-web/models"
 	"github.com/pascallin/go-web/repositries"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
@@ -71,6 +71,6 @@ func RemoveTask(ctx *gin.Context) {
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusNotFound)
 	} else {
-		ctx.JSON(http.StatusOK, bson.D{{"id", id}})
+		ctx.JSON(http.StatusOK, gin.H{"message":"okay"})
 	}
 }
