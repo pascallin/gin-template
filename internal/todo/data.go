@@ -1,19 +1,17 @@
 package todo
 
 import (
+	"database/sql"
 	"fmt"
+	"github.com/jinzhu/gorm"
 
 	databases "github.com/pascallin/go-web/internal/pkg/db"
 )
 
 type Todo struct {
-	ID          uint   `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-}
-
-func (b *Todo) TableName() string {
-	return "todo"
+	gorm.Model
+	Title       sql.NullString
+	Description string
 }
 
 func GetAllTodo(todo *[]Todo) (err error) {

@@ -9,8 +9,8 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 
 	router.GET("/", getTodoList)
 	router.POST("/", createATodo)
-	router.GET(":id", getATodo)
-	router.PUT(":id", updateATodo)
-	router.DELETE(":id", deleteATodo)
+	router.GET("/:id", getATodo)
+	router.PUT("/:id", updateATodo)
+	router.DELETE("/:id", deleteATodo)
 }
 

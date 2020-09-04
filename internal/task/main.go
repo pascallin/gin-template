@@ -9,7 +9,7 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 
 	router.GET("/", getTasks)
 	router.POST("/", createTask)
-	router.GET(":id", getTask)
-	router.PUT(":id", updateTask)
-	router.DELETE(":id", removeTask)
+	router.GET("/:id", getTask)
+	router.PUT("/:id", updateTask)
+	router.DELETE("/:id", removeTask)
 }

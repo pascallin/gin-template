@@ -23,3 +23,11 @@ func InitDB() {
 	}
 	defer mongo.Close()
 }
+
+func MigrateDB() {
+	// connect mysql
+	databases.InitMysqlDatabase()
+	defer databases.MysqlDB.Close()
+	// migration
+	databases.MysqlDB.AutoMigrate(&todo.Todo{})
+}
