@@ -1,6 +1,7 @@
 package todo
 
 import (
+	"github.com/pascallin/go-web/internal/common"
 	databases "github.com/pascallin/go-web/internal/pkg/db"
 	"net/http"
 	"strconv"
@@ -9,8 +10,13 @@ import (
 )
 
 func getTodoList(c *gin.Context) {
+	var input common.Pagination
+	if err := c.ShouldBindQuery(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	var todo []Todo
-	err := getAllTodo(&todo)
+	err := getAllTodo(&todo, input.Page, input.PageSize)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

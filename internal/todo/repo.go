@@ -1,9 +1,12 @@
 package todo
 
-import databases "github.com/pascallin/go-web/internal/pkg/db"
+import (
+	databases "github.com/pascallin/go-web/internal/pkg/db"
+	"time"
+)
 
-func getAllTodo(todo *[]Todo) (err error) {
-	if err = databases.MysqlDB.Order("created_at desc").Find(todo).Error; err != nil {
+func getAllTodo(todo *[]Todo, page uint64, pageSize uint64) (err error) {
+	if err = databases.MysqlDB.Order("updated_at desc").Offset(pageSize * (page - 1)).Limit(pageSize).Find(todo).Error; err != nil {
 		return err
 	}
 	return nil
@@ -24,7 +27,7 @@ func createTodo(todo *Todo) (err error) {
 }
 
 func updateTodo(todo *Todo) (err error, rows int64) {
-	result := databases.MysqlDB.Model(&todo).Updates(Todo{Title:todo.Title, Description:todo.Description})
+	result := databases.MysqlDB.Model(&todo).Updates(Todo{Title:todo.Title, Description:todo.Description, GormModel: databases.GormModel{UpdatedAt: time.Now()}})
 	return result.Error, result.RowsAffected
 }
 

@@ -40,6 +40,7 @@ var MysqlDB *gorm.DB
 func InitMysqlDatabase() () {
 
 	db, err := gorm.Open("mysql", getMysqlConnURL())
+	db.LogMode(true)
 	if err != nil {
 		panic(err)
 	}
