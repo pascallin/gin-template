@@ -15,6 +15,8 @@ Gin demo
 
 ### package manage
 
+using go module, `go version >= 1.11` , reference: https://blog.golang.org/using-go-modules
+
 ``` 
 // install package
 go get github.com/spf13/viper
