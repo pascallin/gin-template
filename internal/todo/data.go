@@ -1,21 +1,18 @@
 package todo
 
 import (
-	"database/sql"
 	"fmt"
-	"github.com/jinzhu/gorm"
-
 	databases "github.com/pascallin/go-web/internal/pkg/db"
 )
 
 type Todo struct {
-	gorm.Model
-	Title       sql.NullString
-	Description string
+	databases.GormModel
+	Title       string `json:"title"`
+	Description string `json:"description"`
 }
 
 func GetAllTodo(todo *[]Todo) (err error) {
-	if err = databases.MysqlDB.Order("created desc").Find(todo).Error; err != nil {
+	if err = databases.MysqlDB.Order("created_at desc").Find(todo).Error; err != nil {
 		return err
 	}
 	return nil

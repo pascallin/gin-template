@@ -5,11 +5,19 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"os"
+	"time"
 )
 
 const (
 	mysqlConnStringTemplate = "%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local"
 )
+
+type GormModel struct {
+	ID        uint `gorm:"primary_key" json:"id"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	DeletedAt *time.Time `sql:"index" json:"deletedAt"`
+}
 
 func getMysqlConnURL() string {
 	host := os.Getenv("MYSQL_HOST")

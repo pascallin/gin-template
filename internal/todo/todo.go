@@ -10,9 +10,11 @@ func getTodoList(c *gin.Context) {
 	var todo []Todo
 	err := GetAllTodo(&todo)
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	} else {
 		c.JSON(http.StatusOK, todo)
+		return
 	}
 }
 
@@ -21,7 +23,7 @@ func createATodo(c *gin.Context) {
 	c.BindJSON(&todo)
 	err := CreateTodo(&todo)
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
 		c.JSON(http.StatusOK, todo)
 	}
@@ -32,7 +34,7 @@ func getATodo(c *gin.Context) {
 	var todo Todo
 	err := GetTodo(&todo, id)
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
 		c.JSON(http.StatusOK, todo)
 	}
@@ -43,7 +45,7 @@ func updateATodo(c *gin.Context) {
 	id := c.Params.ByName("id")
 	err := GetTodo(&todo, id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, todo)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	c.BindJSON(&todo)
 	err = UpdateTodo(&todo, id)
@@ -59,7 +61,7 @@ func deleteATodo(c *gin.Context) {
 	id := c.Params.ByName("id")
 	err := DeleteTodo(&todo, id)
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"id:" + id: "deleted"})
 	}

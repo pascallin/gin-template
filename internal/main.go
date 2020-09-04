@@ -12,18 +12,6 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	todo.RegisterRoutes(rg)
 }
 
-func InitDB() {
-	// connect mysql
-	databases.InitMysqlDatabase()
-	defer databases.MysqlDB.Close()
-	// connect mongodb
-	mongo, err := databases.NewMongoDatabase()
-	if err != nil {
-		panic(err)
-	}
-	defer mongo.Close()
-}
-
 func MigrateDB() {
 	// connect mysql
 	databases.InitMysqlDatabase()
