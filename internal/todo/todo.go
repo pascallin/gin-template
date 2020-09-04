@@ -2,7 +2,7 @@ package todo
 
 import (
 	"github.com/pascallin/go-web/internal/common"
-	databases "github.com/pascallin/go-web/internal/pkg/db"
+	databases "github.com/pascallin/go-web/internal/db"
 	"net/http"
 	"strconv"
 

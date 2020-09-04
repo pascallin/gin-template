@@ -2,7 +2,7 @@ package internal
 
 import (
 	"github.com/gin-gonic/gin"
-	databases "github.com/pascallin/go-web/internal/pkg/db"
+	databases "github.com/pascallin/go-web/internal/db"
 	"github.com/pascallin/go-web/internal/task"
 	"github.com/pascallin/go-web/internal/todo"
 )

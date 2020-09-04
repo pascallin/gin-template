@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	databases "github.com/pascallin/go-web/internal/pkg/db"
+	databases "github.com/pascallin/go-web/internal/db"
 )
 
 var err error

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	databases "github.com/pascallin/go-web/internal/pkg/db"
+	databases "github.com/pascallin/go-web/internal/db"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"

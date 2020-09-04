@@ -1,7 +1,7 @@
 package todo
 
 import (
-	databases "github.com/pascallin/go-web/internal/pkg/db"
+	databases "github.com/pascallin/go-web/internal/db"
 	"time"
 )
 
@@ -27,7 +27,7 @@ func createTodo(todo *Todo) (err error) {
 }
 
 func updateTodo(todo *Todo) (err error, rows int64) {
-	result := databases.MysqlDB.Model(&todo).Updates(Todo{Title:todo.Title, Description:todo.Description, GormModel: databases.GormModel{UpdatedAt: time.Now()}})
+	result := databases.MysqlDB.Model(&todo).Updates(Todo{Title: todo.Title, Description:todo.Description, GormModel: databases.GormModel{UpdatedAt: time.Now()}})
 	return result.Error, result.RowsAffected
 }
 

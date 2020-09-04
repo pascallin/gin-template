@@ -1,7 +1,7 @@
 package todo
 
 import (
-databases "github.com/pascallin/go-web/internal/pkg/db"
+	databases "github.com/pascallin/go-web/internal/db"
 )
 
 type Todo struct {
