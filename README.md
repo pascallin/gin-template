@@ -1,14 +1,15 @@
 # go-web
+
 Gin demo
 
 ## tech stack
 
-* package management using `go module` 
-* http framework using `gin` 
-* mysql driver using `gorm
+* package management using `go module`
+* http framework using `gin`
+* mysql driver using `gorm`
 * mongodb driver using mongo
-* load env using `godotenv` 
-* load config file using `viper` 
+* load env using `godotenv`
+* load config file using `viper`
 
 ## basic
 
@@ -20,10 +21,4 @@ go get github.com/spf13/viper
 
 // remove all packages that not using
 go mod tidy
-```
-
-### run
-
-```shell script
-go run ./main.go
 ```
