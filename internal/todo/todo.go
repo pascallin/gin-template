@@ -1,38 +1,44 @@
 package todo
 
 import (
+	databases "github.com/pascallin/go-web/internal/pkg/db"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func getTodoList(c *gin.Context) {
 	var todo []Todo
-	err := GetAllTodo(&todo)
+	err := getAllTodo(&todo)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	} else {
 		c.JSON(http.StatusOK, todo)
 		return
-	}
-}
-
-func createATodo(c *gin.Context) {
-	var todo Todo
-	c.BindJSON(&todo)
-	err := CreateTodo(&todo)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	} else {
-		c.JSON(http.StatusOK, todo)
 	}
 }
 
 func getATodo(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var todo Todo
-	err := GetTodo(&todo, id)
+	err := getTodo(&todo, id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	} else {
+		c.JSON(http.StatusOK, todo)
+	}
+}
+
+func createATodo(c *gin.Context) {
+	var input CreateTodoInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	todo := Todo{Title:input.Title, Description:input.Description}
+	err := createTodo(&todo)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
@@ -41,15 +47,21 @@ func getATodo(c *gin.Context) {
 }
 
 func updateATodo(c *gin.Context) {
-	var todo Todo
 	id := c.Params.ByName("id")
-	err := GetTodo(&todo, id)
+	uid, err := strconv.ParseUint(id, 10, 32)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	c.BindJSON(&todo)
-	err = UpdateTodo(&todo, id)
-	if err != nil {
+	input := UpdateTodoInput{
+		ID:uid,
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	todo := Todo{GormModel: databases.GormModel{ID: uid}, Title:input.Title, Description:input.Description}
+	if err, _ := updateTodo(&todo); err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
 		c.JSON(http.StatusOK, todo)
@@ -59,7 +71,7 @@ func updateATodo(c *gin.Context) {
 func deleteATodo(c *gin.Context) {
 	var todo Todo
 	id := c.Params.ByName("id")
-	err := DeleteTodo(&todo, id)
+	err, _ := deleteTodo(&todo, id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {

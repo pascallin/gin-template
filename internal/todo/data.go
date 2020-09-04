@@ -1,8 +1,7 @@
 package todo
 
 import (
-	"fmt"
-	databases "github.com/pascallin/go-web/internal/pkg/db"
+databases "github.com/pascallin/go-web/internal/pkg/db"
 )
 
 type Todo struct {
@@ -11,34 +10,13 @@ type Todo struct {
 	Description string `json:"description"`
 }
 
-func GetAllTodo(todo *[]Todo) (err error) {
-	if err = databases.MysqlDB.Order("created_at desc").Find(todo).Error; err != nil {
-		return err
-	}
-	return nil
+type CreateTodoInput struct {
+	Title       string `form:"title" xml:"title" json:"title" binding:"required"`
+	Description string `json:"description"`
 }
 
-func CreateTodo(todo *Todo) (err error) {
-	if err = databases.MysqlDB.Create(todo).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func GetTodo(todo *Todo, id string) (err error) {
-	if err := databases.MysqlDB.Where("id = ?", id).First(todo).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func UpdateTodo(todo *Todo, id string) (err error) {
-	fmt.Println(todo)
-	databases.MysqlDB.Save(todo)
-	return nil
-}
-
-func DeleteTodo(todo *Todo, id string) (err error) {
-	databases.MysqlDB.Where("id = ?", id).Delete(todo)
-	return nil
+type UpdateTodoInput struct {
+	ID			uint64 `uri:"id" binding:"required" json:"id"`
+	Title       string `form:"title" xml:"title" json:"title"`
+	Description string `form:"title" xml:"title" json:"description"`
 }
