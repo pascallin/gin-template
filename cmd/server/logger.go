@@ -1,4 +1,4 @@
-package Middleware
+package main
 
 import (
 	"log"
@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Logger() gin.HandlerFunc {
+func logger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		t := time.Now()
 

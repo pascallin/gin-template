@@ -4,7 +4,6 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
-	"github.com/pascallin/go-web/models"
 	"os"
 )
 
@@ -35,7 +34,5 @@ func InitMysqlDatabase() () {
 	if err != nil {
 		panic(err)
 	}
-	// TODO: abstract migration
-	db.AutoMigrate(&Models.Todo{})
 	MysqlDB = db
 }

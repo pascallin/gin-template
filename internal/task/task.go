@@ -1,16 +1,15 @@
-package api
+package task
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	Models "github.com/pascallin/go-web/models"
-	"github.com/pascallin/go-web/repositries"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func GetTasks(ctx *gin.Context) {
-	tasks := repositries.GetTasks()
+func getTasks(ctx *gin.Context) {
+	tasks := GetTasksData()
 	if tasks == nil {
 		ctx.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -18,12 +17,12 @@ func GetTasks(ctx *gin.Context) {
 	}
 }
 
-func CreateTask(ctx *gin.Context) {
-	var task = Models.Task{}
+func createTask(ctx *gin.Context) {
+	var task = Task{}
 	if err := ctx.ShouldBindJSON(&task); err != nil {
 		ctx.AbortWithError(http.StatusInternalServerError, errors.New("create task error"))
 	}
-	result := repositries.CreateTask(task.New())
+	result := CreateTaskData(task.New())
 	if result == nil {
 		ctx.AbortWithError(http.StatusInternalServerError, errors.New("create task error"))
 	} else {
@@ -31,13 +30,13 @@ func CreateTask(ctx *gin.Context) {
 	}
 }
 
-func GetTask(ctx *gin.Context) {
+func getTask(ctx *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(ctx.Params.ByName("id"))
 	if err != nil {
 		ctx.AbortWithError(http.StatusConflict, err)
 		return
 	}
-	result := repositries.GetTaskById(id)
+	result := GetTaskById(id)
 	if result == nil {
 		ctx.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -45,15 +44,15 @@ func GetTask(ctx *gin.Context) {
 	}
 }
 
-func UpdateTask(ctx *gin.Context) {
+func updateTask(ctx *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(ctx.Params.ByName("id"))
 	if err != nil {
 		ctx.AbortWithError(http.StatusConflict, err)
 		return
 	}
-	var task Models.Task
+	var task Task
 	ctx.BindJSON(&task)
-	result := repositries.UpdateTask(id, &task)
+	result := UpdateTaskData(id, &task)
 	if result == nil {
 		ctx.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -61,16 +60,16 @@ func UpdateTask(ctx *gin.Context) {
 	}
 }
 
-func RemoveTask(ctx *gin.Context) {
+func removeTask(ctx *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(ctx.Params.ByName("id"))
 	if err != nil {
 		ctx.AbortWithError(http.StatusConflict, err)
 		return
 	}
-	err = repositries.RemoveTask(id)
+	err = RemoveTaskData(id)
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusNotFound)
 	} else {
-		ctx.JSON(http.StatusOK, gin.H{"message":"okay"})
+		ctx.JSON(http.StatusOK, gin.H{"message": "okay"})
 	}
 }

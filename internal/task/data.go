@@ -1,20 +1,32 @@
-package repositries
+package task
 
 import (
 	"context"
 	"fmt"
-	"github.com/pascallin/go-web/databases"
-	"github.com/pascallin/go-web/models"
+
+	databases "github.com/pascallin/go-web/internal/pkg/db"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func GetTasks() []*Models.Task {
-	var results []*Models.Task
+type Task struct {
+	ID    primitive.ObjectID `bson:"_id" json:"id"`
+	Title string             `bson:"title" json:"title"`
+}
+
+func (t *Task) New() *Task {
+	return &Task{
+		ID:    primitive.NewObjectID(),
+		Title: t.Title,
+	}
+}
+
+func GetTasksData() []*Task {
+	var results []*Task
 	ctx := context.Background()
 
-	condition :=  bson.D{}
+	condition := bson.D{}
 
 	findOptions := options.Find()
 	findOptions.SetLimit(2)
@@ -30,8 +42,9 @@ func GetTasks() []*Models.Task {
 	defer cur.Close(ctx)
 	for cur.Next(ctx) {
 		// create a value into which the single document can be decoded
-		var task Models.Task
-		err := cur.Decode(&task); if err != nil {
+		var task Task
+		err := cur.Decode(&task)
+		if err != nil {
 			return nil
 		}
 		results = append(results, &task)
@@ -40,9 +53,9 @@ func GetTasks() []*Models.Task {
 	return results
 }
 
-func GetTaskById(id primitive.ObjectID) *Models.Task {
-	var task Models.Task
-	condition := bson.D{{"_id",id}}
+func GetTaskById(id primitive.ObjectID) *Task {
+	var task Task
+	condition := bson.D{{"_id", id}}
 	err := databases.MongoDB.DB.Collection("tasks").FindOne(context.Background(), condition).Decode(&task)
 	if err != nil {
 		return nil
@@ -50,7 +63,7 @@ func GetTaskById(id primitive.ObjectID) *Models.Task {
 	return &task
 }
 
-func CreateTask(task *Models.Task) *Models.Task {
+func CreateTaskData(task *Task) *Task {
 	ctx := context.Background()
 	insertResult, err := databases.MongoDB.DB.Collection("tasks").InsertOne(ctx, task)
 	if err != nil {
@@ -60,7 +73,7 @@ func CreateTask(task *Models.Task) *Models.Task {
 	return task
 }
 
-func UpdateTask(id primitive.ObjectID, task *Models.Task) *Models.Task {
+func UpdateTaskData(id primitive.ObjectID, task *Task) *Task {
 	ctx := context.Background()
 	filter := bson.D{{"_id", id}}
 	update := bson.M{
@@ -73,7 +86,7 @@ func UpdateTask(id primitive.ObjectID, task *Models.Task) *Models.Task {
 	fmt.Printf("%v\n", filter)
 	fmt.Printf("%v\n", update)
 
-	var updatedTask Models.Task
+	var updatedTask Task
 	err := databases.MongoDB.DB.Collection("tasks").FindOneAndUpdate(ctx, filter, update, &opt).Decode(&updatedTask)
 	if err != nil {
 		return nil
@@ -81,7 +94,7 @@ func UpdateTask(id primitive.ObjectID, task *Models.Task) *Models.Task {
 	return &updatedTask
 }
 
-func RemoveTask(id primitive.ObjectID) error {
+func RemoveTaskData(id primitive.ObjectID) error {
 	_, err := databases.MongoDB.DB.Collection("tasks").DeleteOne(context.Background(), bson.D{{Key: "_id", Value: id}})
 	return err
 }

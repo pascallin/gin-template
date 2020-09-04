@@ -1,16 +1,14 @@
-package api
+package todo
 
 import (
-	"github.com/pascallin/go-web/repositries"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	Models "github.com/pascallin/go-web/models"
 )
 
-func GetTodoList(c *gin.Context) {
-	var todo []Models.Todo
-	err := repositries.GetAllTodo(&todo)
+func getTodoList(c *gin.Context) {
+	var todo []Todo
+	err := GetAllTodo(&todo)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -18,10 +16,10 @@ func GetTodoList(c *gin.Context) {
 	}
 }
 
-func CreateATodo(c *gin.Context) {
-	var todo Models.Todo
+func createATodo(c *gin.Context) {
+	var todo Todo
 	c.BindJSON(&todo)
-	err := repositries.CreateATodo(&todo)
+	err := CreateTodo(&todo)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -29,10 +27,10 @@ func CreateATodo(c *gin.Context) {
 	}
 }
 
-func GetATodo(c *gin.Context) {
+func getATodo(c *gin.Context) {
 	id := c.Params.ByName("id")
-	var todo Models.Todo
-	err := repositries.GetATodo(&todo, id)
+	var todo Todo
+	err := GetTodo(&todo, id)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -40,15 +38,15 @@ func GetATodo(c *gin.Context) {
 	}
 }
 
-func UpdateATodo(c *gin.Context) {
-	var todo Models.Todo
+func updateATodo(c *gin.Context) {
+	var todo Todo
 	id := c.Params.ByName("id")
-	err := repositries.GetATodo(&todo, id)
+	err := GetTodo(&todo, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, todo)
 	}
 	c.BindJSON(&todo)
-	err = repositries.UpdateATodo(&todo, id)
+	err = UpdateTodo(&todo, id)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -56,10 +54,10 @@ func UpdateATodo(c *gin.Context) {
 	}
 }
 
-func DeleteATodo(c *gin.Context) {
-	var todo Models.Todo
+func deleteATodo(c *gin.Context) {
+	var todo Todo
 	id := c.Params.ByName("id")
-	err := repositries.DeleteATodo(&todo, id)
+	err := DeleteTodo(&todo, id)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
