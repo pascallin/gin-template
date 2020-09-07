@@ -22,7 +22,7 @@ func (t *Task) New() *Task {
 	}
 }
 
-func GetTasksData() []*Task {
+func getTasksData() []*Task {
 	var results []*Task
 	ctx := context.Background()
 
@@ -53,7 +53,7 @@ func GetTasksData() []*Task {
 	return results
 }
 
-func GetTaskById(id primitive.ObjectID) *Task {
+func getTaskById(id primitive.ObjectID) *Task {
 	var task Task
 	condition := bson.D{{"_id", id}}
 	err := databases.MongoDB.DB.Collection("tasks").FindOne(context.Background(), condition).Decode(&task)
@@ -63,7 +63,7 @@ func GetTaskById(id primitive.ObjectID) *Task {
 	return &task
 }
 
-func CreateTaskData(task *Task) *Task {
+func createTaskData(task *Task) *Task {
 	ctx := context.Background()
 	insertResult, err := databases.MongoDB.DB.Collection("tasks").InsertOne(ctx, task)
 	if err != nil {
@@ -73,7 +73,7 @@ func CreateTaskData(task *Task) *Task {
 	return task
 }
 
-func UpdateTaskData(id primitive.ObjectID, task *Task) *Task {
+func updateTaskData(id primitive.ObjectID, task *Task) *Task {
 	ctx := context.Background()
 	filter := bson.D{{"_id", id}}
 	update := bson.M{
@@ -94,7 +94,7 @@ func UpdateTaskData(id primitive.ObjectID, task *Task) *Task {
 	return &updatedTask
 }
 
-func RemoveTaskData(id primitive.ObjectID) error {
+func removeTaskData(id primitive.ObjectID) error {
 	_, err := databases.MongoDB.DB.Collection("tasks").DeleteOne(context.Background(), bson.D{{Key: "_id", Value: id}})
 	return err
 }

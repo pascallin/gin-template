@@ -9,7 +9,7 @@ import (
 )
 
 func getTasks(ctx *gin.Context) {
-	tasks := GetTasksData()
+	tasks := getTasksData()
 	if tasks == nil {
 		ctx.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -22,7 +22,7 @@ func createTask(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&task); err != nil {
 		ctx.AbortWithError(http.StatusInternalServerError, errors.New("create task error"))
 	}
-	result := CreateTaskData(task.New())
+	result := createTaskData(task.New())
 	if result == nil {
 		ctx.AbortWithError(http.StatusInternalServerError, errors.New("create task error"))
 	} else {
@@ -36,7 +36,7 @@ func getTask(ctx *gin.Context) {
 		ctx.AbortWithError(http.StatusConflict, err)
 		return
 	}
-	result := GetTaskById(id)
+	result := getTaskById(id)
 	if result == nil {
 		ctx.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -52,7 +52,7 @@ func updateTask(ctx *gin.Context) {
 	}
 	var task Task
 	ctx.BindJSON(&task)
-	result := UpdateTaskData(id, &task)
+	result := updateTaskData(id, &task)
 	if result == nil {
 		ctx.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -66,7 +66,7 @@ func removeTask(ctx *gin.Context) {
 		ctx.AbortWithError(http.StatusConflict, err)
 		return
 	}
-	err = RemoveTaskData(id)
+	err = removeTaskData(id)
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusNotFound)
 	} else {
