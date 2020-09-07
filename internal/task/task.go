@@ -1,75 +1,76 @@
 package task
 
 import (
-	"errors"
+	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func getTasks(ctx *gin.Context) {
+func getTasks(c *gin.Context) {
 	tasks := getTasksData()
 	if tasks == nil {
-		ctx.AbortWithStatus(http.StatusNotFound)
+		c.JSON(http.StatusOK, []Task{})
 	} else {
-		ctx.JSON(http.StatusOK, tasks)
+		c.JSON(http.StatusOK, tasks)
 	}
 }
 
-func createTask(ctx *gin.Context) {
-	var task = Task{}
-	if err := ctx.ShouldBindJSON(&task); err != nil {
-		ctx.AbortWithError(http.StatusInternalServerError, errors.New("create task error"))
+func createTask(c *gin.Context) {
+	var task = CreateTaskInput{}
+	if err := c.ShouldBindJSON(&task); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	result := createTaskData(task.New())
-	if result == nil {
-		ctx.AbortWithError(http.StatusInternalServerError, errors.New("create task error"))
-	} else {
-		ctx.JSON(http.StatusOK, task)
-	}
-}
-
-func getTask(ctx *gin.Context) {
-	id, err := primitive.ObjectIDFromHex(ctx.Params.ByName("id"))
+	err, id := createTaskData(&task)
 	if err != nil {
-		ctx.AbortWithError(http.StatusConflict, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, bson.M{"id": id})
+}
+
+func getTask(c *gin.Context) {
+	id, err := primitive.ObjectIDFromHex(c.Params.ByName("id"))
+	if err != nil {
+		c.AbortWithError(http.StatusConflict, err)
 		return
 	}
 	result := getTaskById(id)
 	if result == nil {
-		ctx.AbortWithStatus(http.StatusNotFound)
+		c.AbortWithStatus(http.StatusNotFound)
 	} else {
-		ctx.JSON(http.StatusOK, result)
+		c.JSON(http.StatusOK, result)
 	}
 }
 
-func updateTask(ctx *gin.Context) {
-	id, err := primitive.ObjectIDFromHex(ctx.Params.ByName("id"))
+func updateTask(c *gin.Context) {
+	id, err := primitive.ObjectIDFromHex(c.Params.ByName("id"))
 	if err != nil {
-		ctx.AbortWithError(http.StatusConflict, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	var task Task
-	ctx.BindJSON(&task)
+	c.BindJSON(&task)
 	result := updateTaskData(id, &task)
 	if result == nil {
-		ctx.AbortWithStatus(http.StatusNotFound)
+		c.AbortWithStatus(http.StatusNotFound)
 	} else {
-		ctx.JSON(http.StatusOK, result)
+		c.JSON(http.StatusOK, result)
 	}
 }
 
-func removeTask(ctx *gin.Context) {
-	id, err := primitive.ObjectIDFromHex(ctx.Params.ByName("id"))
+func removeTask(c *gin.Context) {
+	id, err := primitive.ObjectIDFromHex(c.Params.ByName("id"))
 	if err != nil {
-		ctx.AbortWithError(http.StatusConflict, err)
+		c.AbortWithError(http.StatusConflict, err)
 		return
 	}
 	err = removeTaskData(id)
 	if err != nil {
-		ctx.AbortWithStatus(http.StatusNotFound)
+		c.AbortWithStatus(http.StatusNotFound)
 	} else {
-		ctx.JSON(http.StatusOK, gin.H{"message": "okay"})
+		c.JSON(http.StatusOK, gin.H{"message": "okay"})
 	}
 }

@@ -16,4 +16,7 @@ func (t *Task) New() *Task {
 	}
 }
 
+type CreateTaskInput struct {
+	Title string `binding:"required"`
+}
 

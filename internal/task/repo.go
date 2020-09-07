@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
 )
 
 func getTasksData() []*Task {
@@ -50,14 +51,18 @@ func getTaskById(id primitive.ObjectID) *Task {
 	return &task
 }
 
-func createTaskData(task *Task) *Task {
-	ctx := context.Background()
+func createTaskData(input *CreateTaskInput) (error, primitive.ObjectID) {
+	task := Task{
+		ID: primitive.NewObjectID(),
+		Title: input.Title,
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	insertResult, err := databases.MongoDB.DB.Collection("tasks").InsertOne(ctx, task)
 	if err != nil {
-		return nil
+		return err, primitive.NilObjectID
 	}
-	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
-	return task
+	return nil, insertResult.InsertedID.(primitive.ObjectID)
 }
 
 func updateTaskData(id primitive.ObjectID, task *Task) *Task {
