@@ -10,20 +10,27 @@ import (
 	"time"
 )
 
-func getTasksData() []*Task {
+type findTasksCond struct {
+	Title string `json:"title"`
+}
+
+func getTasksData(cond findTasksCond, page uint64, pageSize uint64) (error, []*Task) {
 	var results []*Task
 	ctx := context.Background()
 
 	condition := bson.D{}
+	if cond.Title != "" {
+		condition = append(condition, bson.E{"title", primitive.Regex{Pattern:cond.Title, Options:"i"}})
+	}
 
 	findOptions := options.Find()
-	findOptions.SetLimit(2)
-	//findOptions.SetSkip()
-	//findOptions.SetSort()
+	findOptions.SetLimit(int64(pageSize))
+	findOptions.SetSkip(int64((page - 1) * pageSize))
+	findOptions.SetSort(bson.M{"title": -1})
 
 	cur, err := databases.MongoDB.DB.Collection("tasks").Find(ctx, condition, findOptions)
 	if err != nil {
-		return nil
+		return err, results
 	}
 	fmt.Printf("cur: %+v\n", cur)
 	// Close the cursor once finished
@@ -33,12 +40,12 @@ func getTasksData() []*Task {
 		var task Task
 		err := cur.Decode(&task)
 		if err != nil {
-			return nil
+			return err, results
 		}
 		results = append(results, &task)
 	}
 	fmt.Printf("Found multiple documents (array of pointers): %+v\n", results)
-	return results
+	return nil, results
 }
 
 func getTaskById(id primitive.ObjectID) *Task {

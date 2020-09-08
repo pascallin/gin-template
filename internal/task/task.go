@@ -8,12 +8,17 @@ import (
 )
 
 func getTasks(c *gin.Context) {
-	tasks := getTasksData()
-	if tasks == nil {
-		c.JSON(http.StatusOK, []Task{})
-	} else {
-		c.JSON(http.StatusOK, tasks)
+	var input = GetTaskListInput{}
+	if err := c.ShouldBindQuery(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
+	err, tasks := getTasksData(findTasksCond{Title:input.Title}, input.Page, input.PageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, tasks)
 }
 
 func createTask(c *gin.Context) {
@@ -33,7 +38,7 @@ func createTask(c *gin.Context) {
 func getTask(c *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(c.Params.ByName("id"))
 	if err != nil {
-		c.AbortWithError(http.StatusConflict, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	result := getTaskById(id)
@@ -67,12 +72,13 @@ func updateTask(c *gin.Context) {
 func removeTask(c *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(c.Params.ByName("id"))
 	if err != nil {
-		c.AbortWithError(http.StatusConflict, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	err = removeTaskData(id)
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "okay"})
 	}
