@@ -65,11 +65,12 @@ func createTaskData(input *CreateTaskInput) (error, primitive.ObjectID) {
 	return nil, insertResult.InsertedID.(primitive.ObjectID)
 }
 
-func updateTaskData(id primitive.ObjectID, task *Task) *Task {
-	ctx := context.Background()
+func updateTaskData(id primitive.ObjectID, input *UpdateTaskInput) (error, *Task) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	filter := bson.D{{"_id", id}}
 	update := bson.M{
-		"$set": bson.M{"title": task.Title},
+		"$set": bson.M{"title": input.Title},
 	}
 	after := options.After
 	opt := options.FindOneAndUpdateOptions{
@@ -81,9 +82,9 @@ func updateTaskData(id primitive.ObjectID, task *Task) *Task {
 	var updatedTask Task
 	err := databases.MongoDB.DB.Collection("tasks").FindOneAndUpdate(ctx, filter, update, &opt).Decode(&updatedTask)
 	if err != nil {
-		return nil
+		return err, nil
 	}
-	return &updatedTask
+	return nil, &updatedTask
 }
 
 func removeTaskData(id primitive.ObjectID) error {

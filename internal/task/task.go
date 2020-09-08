@@ -1,7 +1,6 @@
 package task
 
 import (
-	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -28,7 +27,7 @@ func createTask(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, bson.M{"id": id})
+	c.JSON(http.StatusOK, gin.H{"id": id})
 }
 
 func getTask(c *gin.Context) {
@@ -51,14 +50,18 @@ func updateTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var task Task
+	var task UpdateTaskInput
 	c.BindJSON(&task)
-	result := updateTaskData(id, &task)
-	if result == nil {
-		c.AbortWithStatus(http.StatusNotFound)
-	} else {
-		c.JSON(http.StatusOK, result)
+	err, result := updateTaskData(id, &task)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	if result == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "no task was found"})
+		return
+	}
+	c.JSON(http.StatusOK, result)
 }
 
 func removeTask(c *gin.Context) {

@@ -20,3 +20,7 @@ type CreateTaskInput struct {
 	Title string `binding:"required"`
 }
 
+type UpdateTaskInput struct {
+	Title string
+}
+
