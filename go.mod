@@ -19,6 +19,7 @@ require (
 	github.com/peterh/liner v1.2.0 // indirect
 	github.com/spf13/cobra v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/streadway/amqp v1.0.0
 	github.com/ugorji/go v1.1.7 // indirect
 	go.mongodb.org/mongo-driver v1.3.3
 	go.starlark.net v0.0.0-20200901195727-6e684ef5eeee // indirect
