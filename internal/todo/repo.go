@@ -31,7 +31,7 @@ func updateTodo(todo *Todo) (err error, rows int64) {
 	return result.Error, result.RowsAffected
 }
 
-func deleteTodo(todo *Todo, id string) (err error, rows int64) {
+func deleteTodo(todo *Todo, id uint64) (err error, rows int64) {
 	result := databases.MysqlDB.Where("id = ?", id).Delete(todo)
 	return result.Error, result.RowsAffected
 }

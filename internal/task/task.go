@@ -18,7 +18,7 @@ func getTasks(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, tasks)
+	c.JSON(http.StatusOK, gin.H{"data":tasks})
 }
 
 func createTask(c *gin.Context) {
@@ -43,10 +43,10 @@ func getTask(c *gin.Context) {
 	}
 	result := getTaskById(id)
 	if result == nil {
-		c.AbortWithStatus(http.StatusNotFound)
-	} else {
-		c.JSON(http.StatusOK, result)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	c.JSON(http.StatusOK, gin.H{"data":result})
 }
 
 func updateTask(c *gin.Context) {
@@ -66,7 +66,7 @@ func updateTask(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "no task was found"})
 		return
 	}
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, gin.H{"data":result})
 }
 
 func removeTask(c *gin.Context) {
@@ -79,7 +79,6 @@ func removeTask(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
-	} else {
-		c.JSON(http.StatusOK, gin.H{"message": "okay"})
 	}
+	c.JSON(http.StatusOK, gin.H{"message": "okay"})
 }

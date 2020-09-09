@@ -15,13 +15,13 @@ func getTodoList(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var todo []Todo
-	err := getAllTodo(&todo, input.Page, input.PageSize)
+	var todos []Todo
+	err := getAllTodo(&todos, input.Page, input.PageSize)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	} else {
-		c.JSON(http.StatusOK, todo)
+		c.JSON(http.StatusOK, gin.H{"data":todos})
 		return
 	}
 }
@@ -33,7 +33,7 @@ func getATodo(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
-		c.JSON(http.StatusOK, todo)
+		c.JSON(http.StatusOK, gin.H{"data":todo})
 	}
 }
 
@@ -46,10 +46,10 @@ func createATodo(c *gin.Context) {
 	todo := Todo{Title:input.Title, Description:input.Description}
 	err := createTodo(&todo)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	} else {
-		c.JSON(http.StatusOK, todo)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	c.JSON(http.StatusOK, gin.H{"data": todo})
 }
 
 func updateATodo(c *gin.Context) {
@@ -68,19 +68,25 @@ func updateATodo(c *gin.Context) {
 	}
 	todo := Todo{GormModel: databases.GormModel{ID: uid}, Title:input.Title, Description:input.Description}
 	if err, _ := updateTodo(&todo); err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
-	} else {
-		c.JSON(http.StatusOK, todo)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	c.JSON(http.StatusOK, todo)
 }
 
 func deleteATodo(c *gin.Context) {
 	var todo Todo
+	var uid uint64
 	id := c.Params.ByName("id")
-	err, _ := deleteTodo(&todo, id)
+	uid, err := strconv.ParseUint(id, 10, 32)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	} else {
-		c.JSON(http.StatusOK, gin.H{"id:" + id: "deleted"})
+		return
 	}
+	err, _ = deleteTodo(&todo, uid)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": id + " has been deleted"})
 }
