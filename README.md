@@ -33,3 +33,5 @@ swag init
 ```
 
 2. visit http://localhost:4000/swagger/index.html
+
+reference: https://github.com/swaggo/swag/blob/master/README_zh-CN.md

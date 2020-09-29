@@ -17,6 +17,15 @@ import (
 
 var err error
 
+// @title Gin API
+// @version 1.0
+// @description A Gin server demo API
+
+
+// @contact.name pascal_lin
+
+// @host localhost
+// @BasePath /v1
 func main() {
 	// load .env
 	godotenv.Load()

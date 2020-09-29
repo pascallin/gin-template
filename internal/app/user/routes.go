@@ -24,6 +24,7 @@ type PatchPasswordRequest struct {
 	UsernameAndPasswordRequest
 	NewPassword string	`json:"newPassword" form:"newPassword" binding:"required"`
 }
+
 func registerRoute(ctx *gin.Context) {
 	var request RegisterRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
@@ -38,6 +39,14 @@ func registerRoute(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"id":id})
 }
 
+// @Summary user login
+// @Description user login
+// @Tags user
+// @Accept  json
+// @Param user body UsernameAndPasswordRequest true "login"
+// @Produce  json
+// @Success 200 {object} User
+// @Router /user/login [post]
 func loginRoute(ctx *gin.Context) {
 	var request UsernameAndPasswordRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
@@ -52,6 +61,14 @@ func loginRoute(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"token":token})
 }
 
+// @Summary user patch password
+// @Description user patch password
+// @Tags user
+// @Accept  json
+// @Param user body PatchPasswordRequest true "login"
+// @Produce  json
+// @Success 200 {object} User
+// @Router /user/password [patch]
 func patchPasswordRoute(ctx *gin.Context) {
 	var request PatchPasswordRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
