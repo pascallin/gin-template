@@ -1,7 +1,9 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/pascallin/go-web/internal"
 	databases "github.com/pascallin/go-web/internal/db"
 )
 
@@ -23,7 +25,11 @@ func main() {
 	defer mongo.Close()
 
 	// initServer
-	r := initServer()
+	r := gin.Default()
+
+	v1 := r.Group("/v1")
+	internal.RegisterRoutes(v1)
+
 	// running
 	r.Run()
 }

@@ -3,7 +3,7 @@ package task
 import (
 	"context"
 	"fmt"
-	databases "github.com/pascallin/go-web/internal/db"
+	databases "github.com/pascallin/go-web/pkg/db"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"

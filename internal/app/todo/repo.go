@@ -1,7 +1,7 @@
 package todo
 
 import (
-	databases "github.com/pascallin/go-web/internal/db"
+	databases "github.com/pascallin/go-web/pkg/db"
 	"time"
 )
 

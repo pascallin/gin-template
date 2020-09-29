@@ -1,8 +1,8 @@
 package todo
 
 import (
-	"github.com/pascallin/go-web/internal/common"
-	databases "github.com/pascallin/go-web/internal/db"
+	"github.com/pascallin/go-web/internal"
+	databases "github.com/pascallin/go-web/pkg/db"
 	"net/http"
 	"strconv"
 
@@ -10,7 +10,7 @@ import (
 )
 
 func getTodoList(c *gin.Context) {
-	var input common.Pagination
+	var input internal.Pagination
 	if err := c.ShouldBindQuery(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -43,7 +43,7 @@ func createATodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	todo := Todo{Title:input.Title, Description:input.Description}
+	todo := Todo{Title: input.Title, Description:input.Description}
 	err := createTodo(&todo)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

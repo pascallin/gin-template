@@ -3,31 +3,30 @@ module github.com/pascallin/go-web
 go 1.13
 
 require (
+	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/sse v0.1.1-0.20190905051334-43f0f29dbd2b // indirect
-	github.com/gin-gonic/gin v1.3.0
-	github.com/go-delve/delve v1.5.0 // indirect
+	github.com/gin-gonic/gin v1.6.3
+	github.com/go-openapi/spec v0.19.9 // indirect
+	github.com/go-openapi/swag v0.19.9 // indirect
+	github.com/go-playground/validator/v10 v10.4.0 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
-	github.com/golang/protobuf v1.3.3-0.20191022195553-ed6926b37a63 // indirect
-	github.com/google/go-cmp v0.3.0 // indirect
+	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/jinzhu/gorm v1.9.12
 	github.com/joho/godotenv v1.3.0
-	github.com/json-iterator/go v1.1.9 // indirect
-	github.com/mattn/go-colorable v0.1.7 // indirect
-	github.com/mattn/go-runewidth v0.0.9 // indirect
-	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
-	github.com/modern-go/reflect2 v1.0.1 // indirect
-	github.com/peterh/liner v1.2.0 // indirect
-	github.com/spf13/cobra v1.0.0 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/json-iterator/go v1.1.10 // indirect
+	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/streadway/amqp v1.0.0
-	github.com/ugorji/go v1.1.7 // indirect
+	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
+	github.com/swaggo/gin-swagger v1.2.0
+	github.com/swaggo/swag v1.6.7
+	github.com/ugorji/go v1.1.9 // indirect
 	go.mongodb.org/mongo-driver v1.3.3
-	go.starlark.net v0.0.0-20200901195727-6e684ef5eeee // indirect
-	golang.org/x/arch v0.0.0-20200826200359-b19915210f00 // indirect
-	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // indirect
-	golang.org/x/sys v0.0.0-20200905004654-be1d3432aa8f // indirect
+	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a // indirect
+	golang.org/x/net v0.0.0-20200927032502-5d4f70055728 // indirect
+	golang.org/x/sys v0.0.0-20200926100807-9d91bd62050c // indirect
+	golang.org/x/tools v0.0.0-20200925191224-5d1fdd8fa346 // indirect
 	google.golang.org/appengine v1.6.1 // indirect
-	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
-	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
+	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )

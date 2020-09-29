@@ -1,7 +1,7 @@
 package task
 
 import (
-	"github.com/pascallin/go-web/internal/common"
+	"github.com/pascallin/go-web/internal"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -26,6 +26,6 @@ type UpdateTaskInput struct {
 }
 
 type GetTaskListInput struct {
-	common.Pagination
+	internal.Pagination
 	Title string `form:"title"`
 }

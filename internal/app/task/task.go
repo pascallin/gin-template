@@ -13,7 +13,7 @@ func getTasks(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err, tasks := getTasksData(findTasksCond{Title:input.Title}, input.Page, input.PageSize)
+	err, tasks := getTasksData(findTasksCond{Title: input.Title}, input.Page, input.PageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
