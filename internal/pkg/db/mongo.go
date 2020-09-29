@@ -1,4 +1,4 @@
-package databases
+package db
 
 import (
 	"context"
@@ -51,6 +51,7 @@ func NewMongoDatabase() (*MongoDatabase, error) {
 	}
 	db := client.Database(dbname)
 	MongoDB = &MongoDatabase{DB: db, Client: client, Context: ctx}
+	fmt.Println("mongodb connected")
 	return MongoDB, nil
 }
 

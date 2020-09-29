@@ -3,7 +3,7 @@ package task
 import (
 	"context"
 	"fmt"
-	databases "github.com/pascallin/go-web/pkg/db"
+	databases "github.com/pascallin/go-web/internal/pkg/db"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -50,7 +50,7 @@ func getTasksData(cond findTasksCond, page uint64, pageSize uint64) (error, []*T
 
 func getTaskById(id primitive.ObjectID) *Task {
 	var task Task
-	condition := bson.D{{"_id", id}}
+	condition := bson.M{"_id": id}
 	err := databases.MongoDB.DB.Collection("tasks").FindOne(context.Background(), condition).Decode(&task)
 	if err != nil {
 		return nil

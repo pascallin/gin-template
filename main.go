@@ -1,10 +1,18 @@
 package main
 
 import (
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"github.com/pascallin/go-web/internal"
-	databases "github.com/pascallin/go-web/internal/db"
+	swaggerFiles "github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
+
+	_ "github.com/pascallin/go-web/docs"
+	"github.com/pascallin/go-web/internal/app/task"
+	"github.com/pascallin/go-web/internal/app/todo"
+	"github.com/pascallin/go-web/internal/app/user"
+	databases "github.com/pascallin/go-web/internal/pkg/db"
 )
 
 var err error
@@ -28,7 +36,13 @@ func main() {
 	r := gin.Default()
 
 	v1 := r.Group("/v1")
-	internal.RegisterRoutes(v1)
+	task.RegisterRoutes(v1)
+	todo.RegisterRoutes(v1)
+	user.RegisterRoutes(v1)
+
+	// init swagger
+	url := ginSwagger.URL("http://" + os.Getenv("URL") + ":" + os.Getenv("PORT") +"/swagger/doc.json") // The url pointing to API definition
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	// running
 	r.Run()

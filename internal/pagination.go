@@ -1,4 +1,4 @@
-package common
+package internal
 
 type Pagination struct {
 	PageSize uint64 `form:"pageSize" binding:"required,max=20"`
