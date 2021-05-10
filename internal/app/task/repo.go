@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	databases "github.com/pascallin/gin-server/internal/pkg/db"
+	databases "github.com/pascallin/gin-server/internal/pkg"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"

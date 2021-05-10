@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/joho/godotenv"
 	"github.com/pascallin/gin-server/internal/app/todo"
-	databases "github.com/pascallin/gin-server/internal/pkg/db"
+	databases "github.com/pascallin/gin-server/internal/pkg"
 )
 
 func main() {

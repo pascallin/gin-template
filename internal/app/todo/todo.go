@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/pascallin/gin-server/internal"
-	databases "github.com/pascallin/gin-server/internal/pkg/db"
+	databases "github.com/pascallin/gin-server/internal/pkg"
 
 	"github.com/gin-gonic/gin"
 )

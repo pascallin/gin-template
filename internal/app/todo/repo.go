@@ -3,7 +3,7 @@ package todo
 import (
 	"time"
 
-	databases "github.com/pascallin/gin-server/internal/pkg/db"
+	databases "github.com/pascallin/gin-server/internal/pkg"
 )
 
 func getAllTodo(todo *[]Todo, page uint64, pageSize uint64) (err error) {

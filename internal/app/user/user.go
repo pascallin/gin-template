@@ -14,7 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/pascallin/gin-server/internal/pkg/db"
+	db "github.com/pascallin/gin-server/internal/pkg"
 )
 
 func findUserByUserName(username string) (error, *User) {

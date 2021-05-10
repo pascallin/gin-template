@@ -1,7 +1,7 @@
 package todo
 
 import (
-	databases "github.com/pascallin/gin-server/internal/pkg/db"
+	databases "github.com/pascallin/gin-server/internal/pkg"
 )
 
 type Todo struct {
