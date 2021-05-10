@@ -8,13 +8,34 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
+	"github.com/pascallin/gin-server/internal"
 	"github.com/pascallin/gin-server/internal/app/task"
 	"github.com/pascallin/gin-server/internal/app/todo"
 	"github.com/pascallin/gin-server/internal/app/user"
-	databases "github.com/pascallin/gin-server/internal/pkg/db"
+	databases "github.com/pascallin/gin-server/internal/pkg"
+
+	// NOTE: import swagger docs
+	_ "github.com/pascallin/gin-server/docs"
 )
 
 var err error
+
+func SetupRouter() *gin.Engine {
+	// initServer
+	r := gin.Default()
+
+	v1 := r.Group("/v1")
+	task.RegisterRoutes(v1)
+	todo.RegisterRoutes(v1)
+	user.RegisterRoutes(v1)
+	internal.RegisterHealthCheckRoutes(v1)
+
+	// init swagger
+	url := ginSwagger.URL("http://" + os.Getenv("URL") + ":" + os.Getenv("PORT") + "/swagger/doc.json") // The url pointing to API definition
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+
+	return r
+}
 
 // @title Gin API
 // @version 1.0
@@ -39,18 +60,6 @@ func main() {
 	}
 	defer mongo.Close()
 
-	// initServer
-	r := gin.Default()
-
-	v1 := r.Group("/v1")
-	task.RegisterRoutes(v1)
-	todo.RegisterRoutes(v1)
-	user.RegisterRoutes(v1)
-
-	// init swagger
-	url := ginSwagger.URL("http://" + os.Getenv("URL") + ":" + os.Getenv("PORT") + "/swagger/doc.json") // The url pointing to API definition
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
-
-	// running
+	r := SetupRouter()
 	r.Run()
 }
