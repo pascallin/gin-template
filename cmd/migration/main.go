@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	"github.com/pascallin/go-web/internal/app/todo"
-	databases "github.com/pascallin/go-web/internal/pkg/db"
+	"github.com/pascallin/gin-server/internal/app/todo"
+	databases "github.com/pascallin/gin-server/internal/pkg/db"
 )
 
 func main() {

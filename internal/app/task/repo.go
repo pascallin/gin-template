@@ -3,11 +3,12 @@ package task
 import (
 	"context"
 	"fmt"
-	databases "github.com/pascallin/go-web/internal/pkg/db"
+	"time"
+
+	databases "github.com/pascallin/gin-server/internal/pkg/db"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"time"
 )
 
 type findTasksCond struct {
@@ -20,7 +21,7 @@ func getTasksData(cond findTasksCond, page uint64, pageSize uint64) (error, []*T
 
 	condition := bson.D{}
 	if cond.Title != "" {
-		condition = append(condition, bson.E{"title", primitive.Regex{Pattern:cond.Title, Options:"i"}})
+		condition = append(condition, bson.E{"title", primitive.Regex{Pattern: cond.Title, Options: "i"}})
 	}
 
 	findOptions := options.Find()
@@ -60,7 +61,7 @@ func getTaskById(id primitive.ObjectID) *Task {
 
 func createTaskData(input *CreateTaskInput) (error, primitive.ObjectID) {
 	task := Task{
-		ID: primitive.NewObjectID(),
+		ID:    primitive.NewObjectID(),
 		Title: input.Title,
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

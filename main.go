@@ -6,13 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
-	_ "github.com/pascallin/go-web/docs"
-	"github.com/pascallin/go-web/internal/app/task"
-	"github.com/pascallin/go-web/internal/app/todo"
-	"github.com/pascallin/go-web/internal/app/user"
-	databases "github.com/pascallin/go-web/internal/pkg/db"
+	"github.com/pascallin/gin-server/internal/app/task"
+	"github.com/pascallin/gin-server/internal/app/todo"
+	"github.com/pascallin/gin-server/internal/app/user"
+	databases "github.com/pascallin/gin-server/internal/pkg/db"
 )
 
 var err error
@@ -20,7 +19,6 @@ var err error
 // @title Gin API
 // @version 1.0
 // @description A Gin server demo API
-
 
 // @contact.name pascal_lin
 
@@ -50,7 +48,7 @@ func main() {
 	user.RegisterRoutes(v1)
 
 	// init swagger
-	url := ginSwagger.URL("http://" + os.Getenv("URL") + ":" + os.Getenv("PORT") +"/swagger/doc.json") // The url pointing to API definition
+	url := ginSwagger.URL("http://" + os.Getenv("URL") + ":" + os.Getenv("PORT") + "/swagger/doc.json") // The url pointing to API definition
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	// running

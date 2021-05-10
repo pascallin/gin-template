@@ -1,7 +1,7 @@
 package todo
 
 import (
-	databases "github.com/pascallin/go-web/internal/pkg/db"
+	databases "github.com/pascallin/gin-server/internal/pkg/db"
 )
 
 type Todo struct {
@@ -16,7 +16,7 @@ type CreateTodoInput struct {
 }
 
 type UpdateTodoInput struct {
-	ID			uint64 `uri:"id" binding:"required" json:"id"`
+	ID          uint64 `uri:"id" binding:"required" json:"id"`
 	Title       string `form:"title" xml:"title" json:"title"`
 	Description string `form:"title" xml:"title" json:"description"`
 }

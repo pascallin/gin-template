@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/joho/godotenv"
-	databases "github.com/pascallin/go-web/internal/pkg/db"
-	"github.com/streadway/amqp"
 	"log"
+
+	"github.com/joho/godotenv"
+	databases "github.com/pascallin/gin-server/internal/pkg/db"
+	"github.com/streadway/amqp"
 )
 
 func failOnError(err error, msg string) {

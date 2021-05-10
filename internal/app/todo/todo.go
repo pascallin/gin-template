@@ -1,10 +1,11 @@
 package todo
 
 import (
-	"github.com/pascallin/go-web/internal"
-	databases "github.com/pascallin/go-web/internal/pkg/db"
 	"net/http"
 	"strconv"
+
+	"github.com/pascallin/gin-server/internal"
+	databases "github.com/pascallin/gin-server/internal/pkg/db"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +22,7 @@ func getTodoList(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	} else {
-		c.JSON(http.StatusOK, gin.H{"data":todos})
+		c.JSON(http.StatusOK, gin.H{"data": todos})
 		return
 	}
 }
@@ -33,7 +34,7 @@ func getATodo(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
-		c.JSON(http.StatusOK, gin.H{"data":todo})
+		c.JSON(http.StatusOK, gin.H{"data": todo})
 	}
 }
 
@@ -43,7 +44,7 @@ func createATodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	todo := Todo{Title: input.Title, Description:input.Description}
+	todo := Todo{Title: input.Title, Description: input.Description}
 	err := createTodo(&todo)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -60,13 +61,13 @@ func updateATodo(c *gin.Context) {
 		return
 	}
 	input := UpdateTodoInput{
-		ID:uid,
+		ID: uid,
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	todo := Todo{GormModel: databases.GormModel{ID: uid}, Title:input.Title, Description:input.Description}
+	todo := Todo{GormModel: databases.GormModel{ID: uid}, Title: input.Title, Description: input.Description}
 	if err, _ := updateTodo(&todo); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

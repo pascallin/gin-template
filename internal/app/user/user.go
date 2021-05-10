@@ -5,15 +5,16 @@ import (
 	"crypto/md5"
 	"errors"
 	"fmt"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"os"
 	"time"
+
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/pascallin/go-web/internal/pkg/db"
+	"github.com/pascallin/gin-server/internal/pkg/db"
 )
 
 func findUserByUserName(username string) (error, *User) {
@@ -66,7 +67,7 @@ func register(username, password, nickname string) (error, primitive.ObjectID) {
 	return nil, insertResult.InsertedID.(primitive.ObjectID)
 }
 
-func updatePassword(username, password, newPassword string) (error) {
+func updatePassword(username, password, newPassword string) error {
 	var user User
 	p := md5.Sum([]byte(password))
 	matchUser := db.MongoDB.DB.Collection("users").

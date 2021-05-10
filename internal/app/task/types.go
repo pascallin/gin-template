@@ -1,7 +1,7 @@
 package task
 
 import (
-	"github.com/pascallin/go-web/internal"
+	"github.com/pascallin/gin-server/internal"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
