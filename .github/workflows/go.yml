@@ -20,7 +20,7 @@ jobs:
           go-version: 1.15
 
       - name: Build docs for test
-        run: \
+        run: |
           go get -u github.com/swaggo/swag/cmd/swag
           swag init
 
