@@ -1,4 +1,4 @@
-package internal
+package app
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterHealthCheckRoutes(rg *gin.RouterGroup) {
+func registerHealthCheckRoutes(rg *gin.RouterGroup) {
 	rg.GET("/health-check", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"Status": "Pong",

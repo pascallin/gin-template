@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	databases "github.com/pascallin/gin-server/internal/pkg"
+	"github.com/pascallin/gin-template/pkg"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -29,7 +29,7 @@ func getTasksData(cond findTasksCond, page uint64, pageSize uint64) (error, []*T
 	findOptions.SetSkip(int64((page - 1) * pageSize))
 	findOptions.SetSort(bson.M{"title": -1})
 
-	cur, err := databases.MongoDB.DB.Collection("tasks").Find(ctx, condition, findOptions)
+	cur, err := pkg.MongoDB.DB.Collection("tasks").Find(ctx, condition, findOptions)
 	if err != nil {
 		return err, results
 	}
@@ -52,7 +52,7 @@ func getTasksData(cond findTasksCond, page uint64, pageSize uint64) (error, []*T
 func getTaskById(id primitive.ObjectID) *Task {
 	var task Task
 	condition := bson.M{"_id": id}
-	err := databases.MongoDB.DB.Collection("tasks").FindOne(context.Background(), condition).Decode(&task)
+	err := pkg.MongoDB.DB.Collection("tasks").FindOne(context.Background(), condition).Decode(&task)
 	if err != nil {
 		return nil
 	}
@@ -66,7 +66,7 @@ func createTaskData(input *CreateTaskInput) (error, primitive.ObjectID) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	insertResult, err := databases.MongoDB.DB.Collection("tasks").InsertOne(ctx, task)
+	insertResult, err := pkg.MongoDB.DB.Collection("tasks").InsertOne(ctx, task)
 	if err != nil {
 		return err, primitive.NilObjectID
 	}
@@ -88,7 +88,7 @@ func updateTaskData(id primitive.ObjectID, input *UpdateTaskInput) (error, *Task
 	fmt.Printf("%v\n", update)
 
 	var updatedTask Task
-	err := databases.MongoDB.DB.Collection("tasks").FindOneAndUpdate(ctx, filter, update, &opt).Decode(&updatedTask)
+	err := pkg.MongoDB.DB.Collection("tasks").FindOneAndUpdate(ctx, filter, update, &opt).Decode(&updatedTask)
 	if err != nil {
 		return err, nil
 	}
@@ -96,6 +96,6 @@ func updateTaskData(id primitive.ObjectID, input *UpdateTaskInput) (error, *Task
 }
 
 func removeTaskData(id primitive.ObjectID) error {
-	_, err := databases.MongoDB.DB.Collection("tasks").DeleteOne(context.Background(), bson.D{{Key: "_id", Value: id}})
+	_, err := pkg.MongoDB.DB.Collection("tasks").DeleteOne(context.Background(), bson.D{{Key: "_id", Value: id}})
 	return err
 }

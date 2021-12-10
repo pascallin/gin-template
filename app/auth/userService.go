@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	"context"
@@ -8,18 +8,17 @@ import (
 	"os"
 	"time"
 
-	"go.mongodb.org/mongo-driver/mongo/options"
-
 	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
-	db "github.com/pascallin/gin-server/internal/pkg"
+	"github.com/pascallin/gin-template/pkg"
 )
 
 func findUserByUserName(username string) (error, *User) {
 	user := &User{}
-	err := db.MongoDB.DB.Collection("users").
+	err := pkg.MongoDB.DB.Collection("users").
 		FindOne(context.Background(), bson.M{"username": username}).Decode(user)
 	if err != nil {
 		return err, nil
@@ -56,7 +55,7 @@ func register(username, password, nickname string) (error, primitive.ObjectID) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	p := md5.Sum([]byte(password))
-	insertResult, err := db.MongoDB.DB.Collection("users").InsertOne(ctx, User{
+	insertResult, err := pkg.MongoDB.DB.Collection("users").InsertOne(ctx, User{
 		username,
 		nickname,
 		fmt.Sprintf("%x", p),
@@ -70,7 +69,7 @@ func register(username, password, nickname string) (error, primitive.ObjectID) {
 func updatePassword(username, password, newPassword string) error {
 	var user User
 	p := md5.Sum([]byte(password))
-	matchUser := db.MongoDB.DB.Collection("users").
+	matchUser := pkg.MongoDB.DB.Collection("users").
 		FindOne(context.Background(), bson.M{
 			"username": username,
 			"password": fmt.Sprintf("%x", p),
@@ -82,7 +81,7 @@ func updatePassword(username, password, newPassword string) error {
 	defer cancel()
 	np := md5.Sum([]byte(newPassword))
 	after := options.After
-	err := db.MongoDB.DB.Collection("users").
+	err := pkg.MongoDB.DB.Collection("users").
 		FindOneAndUpdate(ctx,
 			bson.M{"username": username},
 			bson.M{"$set": bson.M{"password": fmt.Sprintf("%x", np)}},

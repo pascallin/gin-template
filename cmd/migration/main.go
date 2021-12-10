@@ -2,16 +2,17 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	"github.com/pascallin/gin-server/internal/app/todo"
-	databases "github.com/pascallin/gin-server/internal/pkg"
+	"github.com/pascallin/gin-template/app/todo"
+	"github.com/pascallin/gin-template/pkg"
 )
 
-func main() {
-	// load .env
+func init() {
 	godotenv.Load()
+}
+
+func main() {
 	// connect mysql
-	databases.InitMysqlDatabase()
-	defer databases.MysqlDB.Close()
+	defer pkg.MysqlDB.Close()
 	// migration
-	databases.MysqlDB.AutoMigrate(&todo.Todo{})
+	pkg.MysqlDB.AutoMigrate(&todo.Todo{})
 }

@@ -1,9 +1,18 @@
+# ide
 .idea
 __debug_bin
 
-vendor
-
-docs
+# exact env
 .env
 
+# go mod vendor
+vendor
+
+# swagger docs
+docs
+
+# binary files
 bin/**
+
+# for air
+tmp

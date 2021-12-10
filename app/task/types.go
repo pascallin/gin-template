@@ -1,7 +1,6 @@
 package task
 
 import (
-	"github.com/pascallin/gin-server/internal"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -26,6 +25,11 @@ type UpdateTaskInput struct {
 }
 
 type GetTaskListInput struct {
-	internal.Pagination
+	Pagination
 	Title string `form:"title"`
+}
+
+type Pagination struct {
+	PageSize uint64 `form:"pageSize" binding:"required,max=20"`
+	Page     uint64 `form:"page" binding:"required,max=100"`
 }

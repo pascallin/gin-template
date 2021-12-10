@@ -1,11 +1,13 @@
-package db
+package pkg
 
 import (
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
 	"os"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -13,10 +15,23 @@ const (
 )
 
 type GormModel struct {
-	ID        uint64 `gorm:"primary_key" json:"id"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	ID        uint64     `gorm:"primary_key" json:"id"`
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
 	DeletedAt *time.Time `sql:"index" json:"deletedAt"`
+}
+
+var MysqlDB *gorm.DB
+
+func init() {
+	godotenv.Load()
+
+	db, err := gorm.Open("mysql", getMysqlConnURL())
+	db.LogMode(true)
+	if err != nil {
+		panic(err)
+	}
+	MysqlDB = db
 }
 
 func getMysqlConnURL() string {
@@ -33,16 +48,4 @@ func getMysqlConnURL() string {
 		port,
 		dbName,
 	)
-}
-
-var MysqlDB *gorm.DB
-
-func InitMysqlDatabase() () {
-
-	db, err := gorm.Open("mysql", getMysqlConnURL())
-	db.LogMode(true)
-	if err != nil {
-		panic(err)
-	}
-	MysqlDB = db
 }

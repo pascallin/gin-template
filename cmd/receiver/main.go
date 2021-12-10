@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/joho/godotenv"
-	databases "github.com/pascallin/gin-server/internal/pkg"
+	databases "github.com/pascallin/gin-template/pkg"
 	"github.com/streadway/amqp"
 )
 
@@ -14,8 +14,11 @@ func failOnError(err error, msg string) {
 	}
 }
 
-func main() {
+func init() {
 	godotenv.Load()
+}
+
+func main() {
 
 	conn, err := amqp.Dial(databases.GetRabbitMQConnURL())
 	failOnError(err, "Failed to connect to RabbitMQ")

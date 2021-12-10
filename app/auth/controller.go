@@ -1,8 +1,9 @@
-package user
+package auth
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func RegisterRoutes(rg *gin.RouterGroup) {
@@ -13,18 +14,26 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 }
 
 type UsernameAndPasswordRequest struct {
-	Username string	`json:"username" form:"username" xml:"username" binding:"required"`
-	Password string	`json:"password" form:"password" xml:"password" binding:"required"`
+	Username string `json:"username" form:"username" xml:"username" binding:"required"`
+	Password string `json:"password" form:"password" xml:"password" binding:"required"`
 }
 type RegisterRequest struct {
 	UsernameAndPasswordRequest
-	Nickname string	`json:"nickname" form:"nickname"`
+	Nickname string `json:"nickname" form:"nickname"`
 }
 type PatchPasswordRequest struct {
 	UsernameAndPasswordRequest
-	NewPassword string	`json:"newPassword" form:"newPassword" binding:"required"`
+	NewPassword string `json:"newPassword" form:"newPassword" binding:"required"`
 }
 
+// @Summary user register
+// @Description user register
+// @Tags user
+// @Accept  json
+// @Param user body UsernameAndPasswordRequest true "register"
+// @Produce  json
+// @Success 200 {object} User
+// @Router /user/register [post]
 func registerRoute(ctx *gin.Context) {
 	var request RegisterRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
@@ -36,7 +45,7 @@ func registerRoute(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"id":id})
+	ctx.JSON(http.StatusOK, gin.H{"id": id})
 }
 
 // @Summary user login
@@ -58,7 +67,7 @@ func loginRoute(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"token":token})
+	ctx.JSON(http.StatusOK, gin.H{"token": token})
 }
 
 // @Summary user patch password
@@ -80,5 +89,5 @@ func patchPasswordRoute(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"status":"success"})
+	ctx.JSON(http.StatusOK, gin.H{"status": "success"})
 }

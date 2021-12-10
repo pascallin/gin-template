@@ -17,9 +17,6 @@ Gin server demo
 using go module, `go version >= 1.11` , reference: https://blog.golang.org/using-go-modules
 
 ```shell
-// install package
-go get github.com/spf13/viper
-
 // remove all packages that not using
 go mod tidy
 ```
@@ -29,6 +26,7 @@ go mod tidy
 1. generate swagger json file in project root folder
 
 ```shell
+go get -u github.com/swaggo/swag/cmd/swag
 swag init
 ```
 
