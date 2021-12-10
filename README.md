@@ -1,6 +1,6 @@
 # go-web
 
-Gin server demo
+Gin server Template for quick start
 
 ## tech stack
 
@@ -18,7 +18,6 @@ Gin server demo
 using go module, `go version >= 1.11` , reference: https://blog.golang.org/using-go-modules
 
 ```shell
-// remove all packages that not using
 go mod tidy
 ```
 
