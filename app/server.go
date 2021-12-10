@@ -5,9 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	user "github.com/pascallin/gin-template/app/auth"
-	"github.com/pascallin/gin-template/app/task"
-	"github.com/pascallin/gin-template/app/todo"
+	"github.com/pascallin/gin-template/app/auth"
+	"github.com/pascallin/gin-template/app/example"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
@@ -30,9 +29,8 @@ func InitServer() *gin.Engine {
 	r.Use(gin.Recovery())
 
 	v1 := r.Group("/v1")
-	task.RegisterRoutes(v1)
-	todo.RegisterRoutes(v1)
-	user.RegisterRoutes(v1)
+	example.RegisterRoutes(v1)
+	auth.RegisterRoutes(v1)
 	registerHealthCheckRoutes(v1)
 
 	// init swagger
