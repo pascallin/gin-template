@@ -11,6 +11,7 @@ Gin server demo
 * load env using [godotenv](https://github.com/joho/godotenv)
 * load config file using [viper](https://github.com/spf13/viper)
 * using [gin-swagger](https://github.com/swaggo/gin-swagger) to generate swagger docs
+* hot-reload tool using [air](https://github.com/cosmtrek/air)
 
 ## package manage
 
