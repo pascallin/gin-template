@@ -12,7 +12,7 @@ vendor
 docs
 
 # binary files
-bin/**
+bin
 
 # for air
 tmp
