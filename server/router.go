@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pascallin/gin-template/controller"
+	"github.com/pascallin/gin-template/sender"
 )
 
 func NewRouter() *gin.Engine {
@@ -46,6 +47,10 @@ func NewRouter() *gin.Engine {
 			todoGroup.POST("/", todo.CreateTodo)
 			todoGroup.PUT("/:id", todo.UpdateTodo)
 			todoGroup.DELETE("/:id", todo.DeleteTodo)
+		}
+		mqGroup := v1.Group("mq")
+		{
+			mqGroup.POST("/", sender.SendHelloRoute)
 		}
 	}
 	return router

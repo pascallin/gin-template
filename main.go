@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/pascallin/gin-template/receiver"
 	app "github.com/pascallin/gin-template/server"
 
 	// NOTE: import swagger docs
@@ -40,6 +41,10 @@ func main() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
 		}
+	}()
+
+	go func() {
+		receiver.Listen()
 	}()
 
 	// Wait for interrupt signal to gracefully shutdown the server with

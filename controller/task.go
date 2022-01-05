@@ -40,6 +40,13 @@ type GetTaskListInput struct {
 	Title string `form:"title"`
 }
 
+// @Summary get tasks
+// @Description get tasks
+// @Tags task
+// @Accept  json
+// @Produce json
+// @Success 200 {array} Task
+// @Router /task/ [get]
 func (t TaskController) GetTasks(c *gin.Context) {
 	input := GetTaskListInput{}
 	if err := c.ShouldBindQuery(&input); err != nil {
