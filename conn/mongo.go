@@ -1,4 +1,4 @@
-package pkg
+package conn
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,18 +16,8 @@ import (
 
 const (
 	// Timeout operations after N seconds
-	connectTimeout          = 5
-	mongoConnStringTemplate = "mongodb://%s:%s@%s"
+	connectTimeout = 5
 )
-
-func getMongoConnURL() string {
-	username := os.Getenv("MONGODB_USERNAME")
-	password := os.Getenv("MONGODB_PASSWORD")
-	clusterEndpoint := os.Getenv("MONGODB_ENDPOINT")
-
-	connectionURI := fmt.Sprintf(mongoConnStringTemplate, username, password, clusterEndpoint)
-	return connectionURI
-}
 
 type MongoDatabase struct {
 	DB      *mongo.Database
@@ -37,13 +28,18 @@ type MongoDatabase struct {
 var MongoDB *MongoDatabase
 
 func init() {
+	// load .env
 	godotenv.Load()
 
-	connection := getMongoConnURL()
+	username := os.Getenv("MONGODB_USERNAME")
+	password := os.Getenv("MONGODB_PASSWORD")
+	clusterEndpoint := os.Getenv("MONGODB_ENDPOINT")
+
+	connectionURI := fmt.Sprintf("mongodb://%s:%s@%s", username, password, clusterEndpoint)
 	dbname := os.Getenv("MONGODB_DATABASE")
 	ctx, cancel := context.WithTimeout(context.Background(), connectTimeout*time.Second)
 	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(connection))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(connectionURI))
 	if err != nil {
 		panic(err)
 	}
@@ -51,6 +47,7 @@ func init() {
 	defer cancel()
 	err = client.Ping(ctxping, readpref.Primary())
 	if err != nil {
+		logrus.Error(err)
 		panic(err)
 	}
 	db := client.Database(dbname)

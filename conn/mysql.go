@@ -1,4 +1,4 @@
-package pkg
+package conn
 
 import (
 	"fmt"
@@ -24,6 +24,7 @@ type GormModel struct {
 var MysqlDB *gorm.DB
 
 func init() {
+	// load .env
 	godotenv.Load()
 
 	db, err := gorm.Open("mysql", getMysqlConnURL())

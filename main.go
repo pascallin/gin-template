@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/pascallin/gin-template/app"
+	app "github.com/pascallin/gin-template/server"
 
 	// NOTE: import swagger docs
 	_ "github.com/pascallin/gin-template/docs"

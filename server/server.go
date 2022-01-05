@@ -1,12 +1,12 @@
-package app
+package server
 
 import (
+	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"github.com/pascallin/gin-template/app/auth"
-	"github.com/pascallin/gin-template/app/example"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
@@ -18,7 +18,7 @@ func init() {
 
 func InitServer() *gin.Engine {
 	// initServer
-	r := gin.Default()
+	r := NewRouter()
 
 	// Global middleware
 	// Logger middleware will write the logs to gin.DefaultWriter even if you set with GIN_MODE=release.
@@ -26,12 +26,12 @@ func InitServer() *gin.Engine {
 	r.Use(gin.Logger())
 
 	// Recovery middleware recovers from any panics and writes a 500 if there was one.
-	r.Use(gin.Recovery())
-
-	v1 := r.Group("/v1")
-	example.RegisterRoutes(v1)
-	auth.RegisterRoutes(v1)
-	registerHealthCheckRoutes(v1)
+	r.Use(gin.CustomRecovery(func(c *gin.Context, recovered interface{}) {
+		if err, ok := recovered.(string); ok {
+			c.String(http.StatusInternalServerError, fmt.Sprintf("error: %s", err))
+		}
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}))
 
 	// init swagger
 	url := ginSwagger.URL("http://" + os.Getenv("URL") + ":" + os.Getenv("PORT") + "/swagger/doc.json") // The url pointing to API definition

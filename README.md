@@ -48,3 +48,12 @@ go build -o ./bin/gin-server
 go install -v .
 gin-server
 ```
+
+## testing
+
+```shell
+# install command
+go get github.com/joho/godotenv/cmd/godotenv
+# running test with specific env
+godotenv -f .env.test go test ./...
+```
