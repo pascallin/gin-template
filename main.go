@@ -17,8 +17,6 @@ import (
 	_ "github.com/pascallin/gin-template/docs"
 )
 
-var err error
-
 // @title Gin API
 // @version 1.0
 // @description A Gin server demo API
@@ -27,6 +25,10 @@ var err error
 
 // @host localhost:4000
 // @BasePath /v1
+
+// @securityDefinitions.apikey  ApiKeyAuth
+// @in                          header
+// @name                        Authorization
 func main() {
 
 	router := app.InitServer()

@@ -43,6 +43,7 @@ type GetTaskListInput struct {
 // @Summary get tasks
 // @Description get tasks
 // @Tags task
+// @Security ApiKeyAuth
 // @Accept  json
 // @Produce json
 // @Success 200 {array} Task

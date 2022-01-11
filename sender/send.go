@@ -27,6 +27,7 @@ func init() {
 // @Summary send mq message
 // @Description send mq message
 // @Tags mq
+// @Security     ApiKeyAuth
 // @Accept  json
 // @Produce json
 // @Router /mq [post]

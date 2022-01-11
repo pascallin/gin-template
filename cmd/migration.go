@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	"github.com/pascallin/gin-template/app/example"
-	"github.com/pascallin/gin-template/pkg"
+	"github.com/pascallin/gin-template/conn"
+	"github.com/pascallin/gin-template/controller"
 )
 
 func init() {
@@ -12,7 +12,7 @@ func init() {
 
 func main() {
 	// connect mysql
-	defer pkg.MysqlDB.Close()
+	defer conn.MysqlDB.Close()
 	// migration
-	pkg.MysqlDB.AutoMigrate(&example.Todo{})
+	conn.MysqlDB.AutoMigrate(&controller.Todo{})
 }
