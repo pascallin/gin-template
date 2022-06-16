@@ -3,20 +3,24 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pascallin/gin-template/controller"
+	"github.com/pascallin/gin-template/middleware"
 	"github.com/pascallin/gin-template/sender"
 )
 
-func NewRouter() *gin.Engine {
+func NewRouter(hub *Hub) *gin.Engine {
 	router := gin.New()
-	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
 	health := new(HealthController)
 
 	router.GET("/health", health.Status)
-	// router.Use(middleware.AuthMiddleware())
 
-	v1 := router.Group("v1")
+	// websocket serve
+	router.GET("/ws", gin.Logger(), func(ctx *gin.Context) {
+		serveWs(hub, ctx)
+	})
+
+	v1 := router.Group("v1", gin.Logger(), middleware.AuthMiddleware())
 	{
 		userGroup := v1.Group("user")
 		{
@@ -51,6 +55,11 @@ func NewRouter() *gin.Engine {
 		mqGroup := v1.Group("mq")
 		{
 			mqGroup.POST("/", sender.SendHelloRoute)
+		}
+		verifyGroup := v1.Group("verify")
+		{
+			verifyCtrl := new(controller.VerifyController)
+			verifyGroup.POST("rtmp", verifyCtrl.AuthOnly)
 		}
 	}
 	return router

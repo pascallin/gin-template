@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"time"
@@ -69,6 +70,8 @@ func (a AuthController) RegisterRoute(ctx *gin.Context) {
 // @Success 200 {object} User
 // @Router /user/login [post]
 func (a AuthController) LoginRoute(ctx *gin.Context) {
+	body, _ := ioutil.ReadAll(ctx.Request.Body)
+	fmt.Println(string(body))
 	var request UsernameAndPasswordRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

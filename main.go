@@ -31,7 +31,8 @@ import (
 // @name                        Authorization
 func main() {
 
-	router := app.InitServer()
+	hub := app.NewHub()
+	router := app.InitServer(hub)
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", os.Getenv("PORT")),
 		Handler: router,
