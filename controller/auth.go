@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/pascallin/gin-template/conn"
+	"github.com/pascallin/gin-template/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -126,10 +127,21 @@ func (a AuthController) login(username string, password string) (err error, toke
 	if user.Password != fmt.Sprintf("%x", p) {
 		return errors.New("wrong password"), ""
 	}
-	gentoken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": user.Username,
-		//"nbf": time.Date(2020, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
-	})
+
+	claims := model.CustomerClaims{
+		user.Username,
+		jwt.StandardClaims{
+			Audience:  "",
+			ExpiresAt: 15000,
+			Id:        "",
+			IssuedAt:  0,
+			Issuer:    "test",
+			NotBefore: 0,
+			Subject:   "",
+		},
+	}
+
+	gentoken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := gentoken.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
 		return errors.New("generate token error: " + err.Error()), ""
