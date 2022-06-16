@@ -15,7 +15,7 @@ Gin server Template for quick start
 
 ## package manage
 
-using go module, `go version >= 1.18` , reference: https://blog.golang.org/using-go-modules
+using go module, `go version >= 1.17` , reference: https://blog.golang.org/using-go-modules
 
 ```shell
 go mod tidy
