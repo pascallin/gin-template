@@ -9,13 +9,12 @@ Gin server Template for quick start
 * mysql driver using [gorm](https://github.com/go-gorm/gorm)
 * mongodb driver using [mongo](https://github.com/mongodb/mongo-go-driver)
 * load env using [godotenv](https://github.com/joho/godotenv)
-* load config file using [viper](https://github.com/spf13/viper)
 * using [gin-swagger](https://github.com/swaggo/gin-swagger) to generate swagger docs
 * hot-reload tool using [air](https://github.com/cosmtrek/air)
 
 ## package manage
 
-using go module, `go version >= 1.17` , reference: https://blog.golang.org/using-go-modules
+using go module, `go version >= 1.18` , reference: https://blog.golang.org/using-go-modules
 
 ```shell
 go mod tidy
