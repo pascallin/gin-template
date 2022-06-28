@@ -1,13 +1,15 @@
 package server
 
 import (
+	"path/filepath"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pascallin/gin-template/controller"
 	"github.com/pascallin/gin-template/middleware"
-	"github.com/pascallin/gin-template/sender"
+	"github.com/pascallin/gin-template/server/ws"
 )
 
-func NewRouter(hub *Hub) *gin.Engine {
+func NewRouter() *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Recovery())
 
@@ -17,8 +19,12 @@ func NewRouter(hub *Hub) *gin.Engine {
 
 	// websocket serve
 	router.GET("/ws", gin.Logger(), func(ctx *gin.Context) {
-		serveWs(hub, ctx)
+		ws.ServeWs(ctx)
 	})
+
+	// html rendering
+	publicPath := filepath.Join(".", "public", "*.tmpl")
+	router.LoadHTMLGlob(publicPath)
 
 	v1 := router.Group("v1", gin.Logger(), middleware.AuthMiddleware())
 	{
@@ -54,7 +60,7 @@ func NewRouter(hub *Hub) *gin.Engine {
 		}
 		mqGroup := v1.Group("mq")
 		{
-			mqGroup.POST("/", sender.SendHelloRoute)
+			mqGroup.POST("/", controller.SendHelloRoute)
 		}
 		verifyGroup := v1.Group("verify")
 		{

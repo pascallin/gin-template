@@ -1,11 +1,10 @@
-package server
+package ws
 
 import (
 	"encoding/json"
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
 )
@@ -40,6 +39,7 @@ type clientEvent struct {
 
 // Client is a middleman between the websocket connection and the hub.
 type Client struct {
+	id  string
 	hub *Hub
 	// The websocket connection.
 	conn *websocket.Conn
@@ -130,26 +130,4 @@ func (c *Client) writePump() {
 			}
 		}
 	}
-}
-
-// serveWs handles websocket requests from the peer.
-func serveWs(hub *Hub, c *gin.Context) {
-	// upgrade http to ws
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		logrus.Println(err)
-		return
-	}
-
-	// register ws client
-	client := &Client{
-		hub:  hub,
-		conn: conn,
-		send: make(chan []byte, 256),
-	}
-	client.hub.register <- client
-
-	// Allow collection of memory referenced by the caller by doing all work in
-	// new goroutines.
-	go client.handler()
 }

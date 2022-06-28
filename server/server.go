@@ -16,9 +16,9 @@ func init() {
 	godotenv.Load()
 }
 
-func InitServer(hub *Hub) *gin.Engine {
+func InitServer() *gin.Engine {
 	// initServer
-	r := NewRouter(hub)
+	r := NewRouter()
 
 	// Global middleware
 	// Logger middleware will write the logs to gin.DefaultWriter even if you set with GIN_MODE=release.

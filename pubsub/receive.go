@@ -1,9 +1,8 @@
-package sender
+package pubsub
 
 import (
 	"log"
 
-	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/pascallin/gin-template/conn"
 	"github.com/streadway/amqp"
@@ -20,22 +19,10 @@ func failOnError(err error, msg string) {
 }
 
 func init() {
-	// load .env
 	godotenv.Load()
 }
 
-// @Summary send mq message
-// @Description send mq message
-// @Tags mq
-// @Security     ApiKeyAuth
-// @Accept  json
-// @Produce json
-// @Router /mq [post]
-func SendHelloRoute(c *gin.Context) {
-	SendHello("hello pascal!")
-}
-
-func SendHello(body string) {
+func Listen() {
 
 	conn, err := amqp.Dial(conn.GetRabbitMQConnURL())
 	failOnError(err, "Failed to connect to RabbitMQ")
@@ -55,15 +42,19 @@ func SendHello(body string) {
 	)
 	failOnError(err, "Failed to declare a queue")
 
-	err = ch.Publish(
-		"",     // exchange
-		q.Name, // routing key
-		false,  // mandatory
-		false,  // immediate
-		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte(body),
-		})
-	log.Printf(" [x] Sent %s", body)
-	failOnError(err, "Failed to publish a message")
+	msgs, err := ch.Consume(
+		q.Name, // queue
+		"",     // consumer
+		true,   // auto-ack
+		false,  // exclusive
+		false,  // no-local
+		false,  // no-wait
+		nil,    // args
+	)
+	failOnError(err, "Failed to register a consumer")
+
+	for d := range msgs {
+		log.Printf("Received a message: %s", d.Body)
+	}
+
 }

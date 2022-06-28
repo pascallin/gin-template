@@ -1,4 +1,4 @@
-package server
+package ws
 
 import (
 	"encoding/json"
@@ -12,7 +12,7 @@ import (
 type Hub struct {
 	mu sync.RWMutex
 	// Registered clients.
-	clients map[*Client]bool
+	clients map[string]*Client
 
 	// send outbound message payload to all clients
 	broadcast chan []byte
@@ -33,7 +33,7 @@ func NewHub() *Hub {
 		inbound:    make(chan clientEvent),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
-		clients:    make(map[*Client]bool),
+		clients:    make(map[string]*Client),
 	}
 }
 
@@ -56,22 +56,22 @@ func (h *Hub) run() {
 		select {
 		case client := <-h.register:
 			logrus.Info("Client register")
-			h.clients[client] = true
+			h.clients[client.id] = client
 			go client.writePump()
 		case client := <-h.unregister:
 			logrus.Info("Client unregister")
-			if _, ok := h.clients[client]; ok {
-				delete(h.clients, client)
+			if _, ok := h.clients[client.id]; ok {
+				delete(h.clients, client.id)
 				close(client.send)
 			}
 		case message := <-h.broadcast:
-			for client := range h.clients {
+			for _, client := range h.clients {
 				select {
 				case client.send <- message:
 				default:
 					h.mu.Lock()
 					close(client.send)
-					delete(h.clients, client)
+					delete(h.clients, client.id)
 					h.mu.Unlock()
 				}
 			}
