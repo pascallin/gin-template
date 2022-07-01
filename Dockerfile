@@ -3,9 +3,8 @@ FROM golang:1.18
 WORKDIR /go/src/app
 COPY . .
 
-# NOTE: skip env config for now
 RUN go mod download
-RUN go get -u github.com/swaggo/swag/cmd/swag
+RUN go install github.com/swaggo/swag/cmd/swag@v1.8.3
 RUN swag init
 RUN go build -o ./bin/gin-server
 RUN go install -v .
