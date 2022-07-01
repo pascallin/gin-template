@@ -2,19 +2,12 @@ package conn
 
 import (
 	"fmt"
-	"log"
 	"os"
 )
 
 const (
 	amqpConnStringTemplate = "amqp://%s:%s@%s:%s/"
 )
-
-func failOnError(err error, msg string) {
-	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
-	}
-}
 
 func GetRabbitMQConnURL() string {
 	host := os.Getenv("RABBITMQ_HOST")

@@ -1,22 +1,15 @@
 package pubsub
 
 import (
-	"log"
-
 	"github.com/joho/godotenv"
 	"github.com/pascallin/gin-template/conn"
+	log "github.com/sirupsen/logrus"
 	"github.com/streadway/amqp"
 )
 
 var (
 	QUEUE_NAME = "hello"
 )
-
-func failOnError(err error, msg string) {
-	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
-	}
-}
 
 func init() {
 	godotenv.Load()
@@ -25,11 +18,17 @@ func init() {
 func Listen() {
 
 	conn, err := amqp.Dial(conn.GetRabbitMQConnURL())
-	failOnError(err, "Failed to connect to RabbitMQ")
+	if err != nil {
+		log.Error("%s: %s", err, "Failed to connect to RabbitMQ")
+		return
+	}
 	defer conn.Close()
 
 	ch, err := conn.Channel()
-	failOnError(err, "Failed to open a channel")
+	if err != nil {
+		log.Error("%s: %s", err, "Failed to open a channel")
+		return
+	}
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
@@ -40,7 +39,10 @@ func Listen() {
 		false,      // no-wait
 		nil,        // arguments
 	)
-	failOnError(err, "Failed to declare a queue")
+	if err != nil {
+		log.Error("%s: %s", err, "Failed to declare a queue")
+		return
+	}
 
 	msgs, err := ch.Consume(
 		q.Name, // queue
@@ -51,10 +53,13 @@ func Listen() {
 		false,  // no-wait
 		nil,    // args
 	)
-	failOnError(err, "Failed to register a consumer")
+	if err != nil {
+		log.Error("%s: %s", err, "Failed to register a consumer")
+		return
+	}
 
 	for d := range msgs {
-		log.Printf("Received a message: %s", d.Body)
+		log.Infof("Received a message: %s", d.Body)
 	}
 
 }

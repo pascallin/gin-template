@@ -3,19 +3,24 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/pascallin/gin-template/pkg"
 	"github.com/pascallin/gin-template/pubsub"
 	app "github.com/pascallin/gin-template/server"
 	"github.com/pascallin/gin-template/server/ws"
+	"github.com/sirupsen/logrus"
 
 	// NOTE: import swagger docs
 	_ "github.com/pascallin/gin-template/docs"
 )
+
+func init() {
+	pkg.SetupLogger()
+}
 
 // @title Gin API
 // @version 1.0
@@ -48,7 +53,7 @@ func main() {
 	// it won't block the graceful shutdown handling below
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+			logrus.Fatalf("listen: %s\n", err)
 		}
 	}()
 
@@ -59,5 +64,5 @@ func main() {
 	// Listen for the interrupt signal.
 	<-ctx.Done()
 
-	log.Println("Server exiting")
+	logrus.Println("Server exiting")
 }
