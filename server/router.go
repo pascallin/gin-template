@@ -44,8 +44,8 @@ func NewRouter() *gin.Engine {
 		{
 			task := new(controller.TaskController)
 			taskGroup.GET("/", task.GetTasks)
-			taskGroup.GET("/:id", task.GetTask)
 			taskGroup.POST("/", task.CreateTask)
+			taskGroup.GET("/:id", task.GetTask)
 			taskGroup.PUT("/:id", task.UpdateTask)
 			taskGroup.DELETE("/:id", task.DeleteTask)
 		}
@@ -53,8 +53,8 @@ func NewRouter() *gin.Engine {
 		{
 			todo := new(controller.TodoController)
 			todoGroup.GET("/", todo.GetTodos)
-			todoGroup.GET("/:id", todo.GetTodo)
 			todoGroup.POST("/", todo.CreateTodo)
+			todoGroup.GET("/:id", todo.GetTodo)
 			todoGroup.PUT("/:id", todo.UpdateTodo)
 			todoGroup.DELETE("/:id", todo.DeleteTodo)
 		}

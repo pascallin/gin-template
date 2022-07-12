@@ -14,10 +14,10 @@ Gin server Template for quick start
 
 ## package manage
 
-using go module, `go version >= 1.18` , reference: https://blog.golang.org/using-go-modules
+using go module, `go version >= 1.18`, reference: <https://blog.golang.org/using-go-modules>
 
 ```shell
-go mod tidy
+go mod download
 ```
 
 ## swagger
@@ -25,13 +25,13 @@ go mod tidy
 1. generate swagger json file in project root folder
 
 ```shell
-go get -u github.com/swaggo/swag/cmd/swag
-swag init
+go install github.com/swaggo/swag/cmd/swag@latest
+swag init --generalInfo ./server/server.go
 ```
 
-2. visit http://localhost:4000/swagger/index.html
+1. visit <http://localhost:4000/swagger/index.html>
 
-reference: https://github.com/swaggo/swag/blob/master/README_zh-CN.md
+reference: <https://github.com/swaggo/swag/blob/master/README_zh-CN.md>
 
 ## run as docker container
 

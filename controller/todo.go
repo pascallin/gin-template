@@ -22,17 +22,28 @@ type Todo struct {
 	Description string `json:"description"`
 }
 
-type CreateTodoInput struct {
+type TodoInput struct {
 	Title       string `form:"title" xml:"title" json:"title" binding:"required"`
 	Description string `json:"description"`
 }
 
-type UpdateTodoInput struct {
+type UpdateTodo struct {
 	ID          uint64 `uri:"id" binding:"required" json:"id"`
 	Title       string `form:"title" xml:"title" json:"title"`
-	Description string `form:"title" xml:"title" json:"description"`
+	Description string `form:"description" xml:"description" json:"description"`
 }
 
+// GetTodos godoc
+// @Summary get todo list
+// @Description get todo list
+// @Tags todo
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce json
+// @Success 200 {array} Todo
+// @Router /todo [get]
+// @Param   page     query    number     true        "page number"
+// @Param   pageSize    query    number     true        "page size"
 func (t TodoController) GetTodos(c *gin.Context) {
 	var input Pagination
 	if err := c.ShouldBindQuery(&input); err != nil {
@@ -50,6 +61,16 @@ func (t TodoController) GetTodos(c *gin.Context) {
 	}
 }
 
+// GetTodo godoc
+// @Summary get todo
+// @Description get todo
+// @Tags todo
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce json
+// @Success 200 {object} Todo
+// @Router /todo/:id [get]
+// @Param   id     path    string     true        "ID"
 func (t TodoController) GetTodo(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var todo Todo
@@ -61,8 +82,18 @@ func (t TodoController) GetTodo(c *gin.Context) {
 	}
 }
 
+// CreateTodo godoc
+// @Summary create a todo item
+// @Schemes
+// @Description create a todo item
+// @Tags todo
+// @Accept json
+// @Produce json
+// @security  ApiKeyAuth
+// @Router /todo [post]
+// @Param   data     body    TodoInput     true        "data"
 func (t TodoController) CreateTodo(c *gin.Context) {
-	var input CreateTodoInput
+	var input TodoInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -76,6 +107,17 @@ func (t TodoController) CreateTodo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": todo})
 }
 
+// UpdateTodo godoc
+// @Summary update a todo item
+// @Schemes
+// @Description update a todo item
+// @Tags todo
+// @Accept json
+// @Produce json
+// @security  ApiKeyAuth
+// @Router /todo/:id [put]
+// @Param   id     path    string     true        "ID"
+// @Param   data     body    TodoInput     true        "data"
 func (t TodoController) UpdateTodo(c *gin.Context) {
 	id := c.Params.ByName("id")
 	uid, err := strconv.ParseUint(id, 10, 32)
@@ -83,7 +125,7 @@ func (t TodoController) UpdateTodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	input := UpdateTodoInput{
+	input := UpdateTodo{
 		ID: uid,
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -91,13 +133,23 @@ func (t TodoController) UpdateTodo(c *gin.Context) {
 		return
 	}
 	todo := Todo{GormModel: conn.GormModel{ID: uid}, Title: input.Title, Description: input.Description}
-	if err, _ := updateTodo(&todo); err != nil {
+	if _, err := updateTodo(&todo); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, todo)
 }
 
+// DeleteTodo godoc
+// @Summary delete a todo item
+// @Schemes
+// @Description delete a todo item
+// @Tags todo
+// @Accept json
+// @Produce json
+// @security  ApiKeyAuth
+// @Router /todo/:id [delete]
+// @Param   id     path    string     true        "ID"
 func (t TodoController) DeleteTodo(c *gin.Context) {
 	var todo Todo
 	var uid uint64
@@ -107,7 +159,7 @@ func (t TodoController) DeleteTodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err, _ = deleteTodo(&todo, uid)
+	_, err = deleteTodo(&todo, uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -136,12 +188,12 @@ func createTodo(todo *Todo) (err error) {
 	return nil
 }
 
-func updateTodo(todo *Todo) (err error, rows int64) {
+func updateTodo(todo *Todo) (rows int64, err error) {
 	result := conn.MysqlDB.Model(&todo).Updates(Todo{Title: todo.Title, Description: todo.Description, GormModel: conn.GormModel{UpdatedAt: time.Now()}})
-	return result.Error, result.RowsAffected
+	return result.RowsAffected, result.Error
 }
 
-func deleteTodo(todo *Todo, id uint64) (err error, rows int64) {
+func deleteTodo(todo *Todo, id uint64) (rows int64, err error) {
 	result := conn.MysqlDB.Where("id = ?", id).Delete(todo)
-	return result.Error, result.RowsAffected
+	return result.RowsAffected, result.Error
 }

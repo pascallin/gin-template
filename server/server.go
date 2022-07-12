@@ -10,6 +10,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	docs "github.com/pascallin/gin-template/docs"
+	"github.com/pascallin/gin-template/server/ws"
 )
 
 func init() {
@@ -17,7 +18,23 @@ func init() {
 	godotenv.Load()
 }
 
+// @title Gin API
+// @version 1.0
+// @description A Gin server demo API
+
+// @contact.name pascal_lin
+
+// @host localhost:4000
+// @BasePath /v1
+
+// @securityDefinitions.apikey  ApiKeyAuth
+// @in                          header
+// @name                        Authorization
 func InitServer() *gin.Engine {
+	if err := ws.Start(); err != nil {
+		panic(err)
+	}
+
 	// initServer
 	r := NewRouter()
 

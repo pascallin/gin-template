@@ -62,6 +62,15 @@ func (t TaskController) GetTasks(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": tasks})
 }
 
+// @Summary get task
+// @Description get task
+// @Tags task
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce json
+// @Success 200 {object} Task
+// @Router /task/:id [get]
+// @Param   id     path    string     true        "ID"
 func (t TaskController) GetTask(c *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(c.Params.ByName("id"))
 	if err != nil {
@@ -76,6 +85,16 @@ func (t TaskController) GetTask(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": result})
 }
 
+// CreateTask godoc
+// @Summary create a task item
+// @Schemes
+// @Description create a task item
+// @Tags task
+// @Accept json
+// @Produce json
+// @security  ApiKeyAuth
+// @Router /task [post]
+// @Param   data     body    CreateTaskInput     true        "data"
 func (t TaskController) CreateTask(c *gin.Context) {
 	var task = CreateTaskInput{}
 	if err := c.ShouldBindJSON(&task); err != nil {
@@ -90,6 +109,17 @@ func (t TaskController) CreateTask(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"id": id})
 }
 
+// UpdateTask godoc
+// @Summary update a task item
+// @Schemes
+// @Description update a task item
+// @Tags task
+// @Accept json
+// @Produce json
+// @security  ApiKeyAuth
+// @Router /task/:id [put]
+// @Param   id     path    string     true        "ID"
+// @Param   data     body    UpdateTaskInput     true        "data"
 func (t TaskController) UpdateTask(c *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(c.Params.ByName("id"))
 	if err != nil {
@@ -110,6 +140,16 @@ func (t TaskController) UpdateTask(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": result})
 }
 
+// DeleteTask godoc
+// @Summary delete a task
+// @Schemes
+// @Description delete a task
+// @Tags task
+// @Accept json
+// @Produce json
+// @security  ApiKeyAuth
+// @Router /task/:id [delete]
+// @Param   id     path    string     true        "ID"
 func (t TaskController) DeleteTask(c *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(c.Params.ByName("id"))
 	if err != nil {

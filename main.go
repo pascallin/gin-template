@@ -11,7 +11,6 @@ import (
 	"github.com/pascallin/gin-template/pkg"
 	"github.com/pascallin/gin-template/pubsub"
 	app "github.com/pascallin/gin-template/server"
-	"github.com/pascallin/gin-template/server/ws"
 	"github.com/sirupsen/logrus"
 
 	// NOTE: import swagger docs
@@ -22,24 +21,7 @@ func init() {
 	pkg.SetupLogger()
 }
 
-// @title Gin API
-// @version 1.0
-// @description A Gin server demo API
-
-// @contact.name pascal_lin
-
-// @host localhost:4000
-// @BasePath /v1
-
-// @securityDefinitions.apikey  ApiKeyAuth
-// @in                          header
-// @name                        Authorization
 func main() {
-
-	if err := ws.Start(); err != nil {
-		panic(err)
-	}
-
 	router := app.InitServer()
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", os.Getenv("PORT")),
