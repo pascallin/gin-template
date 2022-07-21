@@ -1,4 +1,6 @@
 [![wakatime](https://wakatime.com/badge/github/pascallin/gin-template.svg)](https://wakatime.com/badge/github/pascallin/gin-template)
+[![Go Report Card](https://goreportcard.com/badge/github.com/pascallin/gin-template)](https://goreportcard.com/report/github.com/pascallin/gin-template)
+[![Go Reference](https://pkg.go.dev/badge/github.com/pascallin/gin-template.svg)](https://pkg.go.dev/github.com/pascallin/gin-template)
 
 # go-web
 
