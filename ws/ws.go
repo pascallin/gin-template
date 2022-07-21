@@ -53,3 +53,7 @@ func FindClientByID(id string) (*Client, bool) {
 	client, found := _hub.clients[id]
 	return client, found
 }
+
+func GetWebsocketConnectionCount() int {
+	return len(_hub.clients)
+}

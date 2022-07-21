@@ -4,9 +4,10 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/pascallin/gin-template/controller"
 	"github.com/pascallin/gin-template/middleware"
-	"github.com/pascallin/gin-template/server/ws"
+	"github.com/pascallin/gin-template/ws"
 )
 
 func NewRouter() *gin.Engine {
@@ -16,6 +17,7 @@ func NewRouter() *gin.Engine {
 	health := new(HealthController)
 
 	router.GET("/health", health.Status)
+	router.GET("metrics", prometheusHandler())
 
 	// websocket serve
 	router.GET("/ws", gin.Logger(), func(ctx *gin.Context) {

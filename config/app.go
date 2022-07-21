@@ -16,6 +16,7 @@ type AppConfig struct {
 	APIServerPort string
 	AppApiKey     string
 	AppJwtSecret  string
+	AppWebPort    string
 }
 
 func GetAppConfig() AppConfig {
@@ -24,5 +25,6 @@ func GetAppConfig() AppConfig {
 		APIServerPort: os.Getenv("WEB_PORT"),
 		AppApiKey:     os.Getenv("APP_API_KEY"),
 		AppJwtSecret:  os.Getenv("JWT_SECRET"),
+		AppWebPort:    os.Getenv("PORT"),
 	}
 }

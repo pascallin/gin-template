@@ -9,13 +9,19 @@ import (
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
+	"github.com/pascallin/gin-template/config"
 	docs "github.com/pascallin/gin-template/docs"
-	"github.com/pascallin/gin-template/server/ws"
+	"github.com/pascallin/gin-template/metrics"
+	"github.com/pascallin/gin-template/pkg"
+	"github.com/pascallin/gin-template/ws"
 )
 
 func init() {
 	// load .env
 	godotenv.Load()
+
+	// setup logger
+	pkg.SetupLogger()
 }
 
 // @title Gin API
@@ -56,4 +62,16 @@ func InitServer() *gin.Engine {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	return r
+}
+
+func Start() error {
+	router := InitServer()
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%s", config.GetAppConfig().AppWebPort),
+		Handler: router,
+	}
+
+	go metrics.Start()
+
+	return srv.ListenAndServe()
 }
