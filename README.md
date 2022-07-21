@@ -1,3 +1,5 @@
+[![wakatime](https://wakatime.com/badge/github/pascallin/gin-template.svg)](https://wakatime.com/badge/github/pascallin/gin-template)
+
 # go-web
 
 Gin server Template for quick start
@@ -56,5 +58,3 @@ go get github.com/joho/godotenv/cmd/godotenv
 # running test with specific env
 godotenv -f .env.test go test ./...
 ```
-
-[![wakatime](https://wakatime.com/badge/github/pascallin/gin-template.svg)](https://wakatime.com/badge/github/pascallin/gin-template)
