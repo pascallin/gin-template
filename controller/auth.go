@@ -31,7 +31,7 @@ type PatchPasswordRequest struct {
 // @Accept  json
 // @Param user body UsernameAndPasswordRequest true "register"
 // @Produce  json
-// @Success 200 {object} User
+// @Success 200 {object} model.User
 // @Router /user/register [post]
 func (a AuthController) RegisterRoute(ctx *gin.Context) {
 	var request RegisterRequest
@@ -53,7 +53,7 @@ func (a AuthController) RegisterRoute(ctx *gin.Context) {
 // @Accept  json
 // @Param user body UsernameAndPasswordRequest true "login"
 // @Produce  json
-// @Success 200 {object} User
+// @Success 200 {object} model.User
 // @Router /user/login [post]
 func (a AuthController) LoginRoute(ctx *gin.Context) {
 	body, _ := ioutil.ReadAll(ctx.Request.Body)
@@ -77,7 +77,7 @@ func (a AuthController) LoginRoute(ctx *gin.Context) {
 // @Accept  json
 // @Param user body PatchPasswordRequest true "login"
 // @Produce  json
-// @Success 200 {object} User
+// @Success 200 {object} model.User
 // @Router /user/password [patch]
 func (a AuthController) PatchPasswordRoute(ctx *gin.Context) {
 	var request PatchPasswordRequest

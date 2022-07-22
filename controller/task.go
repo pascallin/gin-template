@@ -29,7 +29,7 @@ type GetTaskListInput struct {
 // @Security ApiKeyAuth
 // @Accept  json
 // @Produce json
-// @Success 200 {array} Task
+// @Success 200 {array} model.Task
 // @Router /task/ [get]
 func (t TaskController) GetTasks(c *gin.Context) {
 	input := GetTaskListInput{}
@@ -51,7 +51,7 @@ func (t TaskController) GetTasks(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Accept  json
 // @Produce json
-// @Success 200 {object} Task
+// @Success 200 {object} model.Task
 // @Router /task/:id [get]
 // @Param   id     path    string     true        "ID"
 func (t TaskController) GetTask(c *gin.Context) {

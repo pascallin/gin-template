@@ -34,7 +34,7 @@ type UpdateTodo struct {
 // @Security ApiKeyAuth
 // @Accept  json
 // @Produce json
-// @Success 200 {array} Todo
+// @Success 200 {array} model.Todo
 // @Router /todo [get]
 // @Param   page     query    number     true        "page number"
 // @Param   pageSize    query    number     true        "page size"
@@ -62,7 +62,7 @@ func (t TodoController) GetTodos(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Accept  json
 // @Produce json
-// @Success 200 {object} Todo
+// @Success 200 {object} model.Todo
 // @Router /todo/:id [get]
 // @Param   id     path    string     true        "ID"
 func (t TodoController) GetTodo(c *gin.Context) {
