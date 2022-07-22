@@ -55,8 +55,6 @@ gin-server
 ## testing
 
 ```shell
-# install command
-go get github.com/joho/godotenv/cmd/godotenv
-# running test with specific env
-godotenv -f .env.test go test ./...
+# unit test
+go test -v ./...
 ```
