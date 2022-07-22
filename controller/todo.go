@@ -3,23 +3,17 @@ package controller
 import (
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pascallin/gin-template/conn"
+	"github.com/pascallin/gin-template/model"
+	"github.com/pascallin/gin-template/service"
 )
 
 type TodoController struct{}
 
 type Pagination struct {
-	PageSize uint64 `form:"pageSize" binding:"required,max=20"`
-	Page     uint64 `form:"page" binding:"required,max=100"`
-}
-
-type Todo struct {
-	conn.GormModel
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	PageSize int `form:"pageSize" binding:"required,max=20"`
+	Page     int `form:"page" binding:"required,max=100"`
 }
 
 type TodoInput struct {
@@ -50,8 +44,8 @@ func (t TodoController) GetTodos(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var todos []Todo
-	err := getAllTodo(&todos, input.Page, input.PageSize)
+	var todos []model.Todo
+	err := service.GetAllTodo(&todos, input.Page, input.PageSize)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -73,8 +67,8 @@ func (t TodoController) GetTodos(c *gin.Context) {
 // @Param   id     path    string     true        "ID"
 func (t TodoController) GetTodo(c *gin.Context) {
 	id := c.Params.ByName("id")
-	var todo Todo
-	err := getTodo(&todo, id)
+	var todo model.Todo
+	err := service.GetTodo(&todo, id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
@@ -98,8 +92,8 @@ func (t TodoController) CreateTodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	todo := Todo{Title: input.Title, Description: input.Description}
-	err := createTodo(&todo)
+	todo := model.Todo{Title: input.Title, Description: input.Description}
+	err := service.CreateTodo(todo.Title, todo.Description)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -132,8 +126,12 @@ func (t TodoController) UpdateTodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	todo := Todo{GormModel: conn.GormModel{ID: uid}, Title: input.Title, Description: input.Description}
-	if _, err := updateTodo(&todo); err != nil {
+	todo := model.Todo{
+		ID:          uid,
+		Title:       input.Title,
+		Description: input.Description,
+	}
+	if _, err := service.UpdateTodo(&todo); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -151,7 +149,7 @@ func (t TodoController) UpdateTodo(c *gin.Context) {
 // @Router /todo/:id [delete]
 // @Param   id     path    string     true        "ID"
 func (t TodoController) DeleteTodo(c *gin.Context) {
-	var todo Todo
+	var todo model.Todo
 	var uid uint64
 	id := c.Params.ByName("id")
 	uid, err := strconv.ParseUint(id, 10, 32)
@@ -159,41 +157,10 @@ func (t TodoController) DeleteTodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	_, err = deleteTodo(&todo, uid)
+	_, err = service.DeleteTodo(&todo, uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": id + " has been deleted"})
-}
-
-func getAllTodo(todo *[]Todo, page uint64, pageSize uint64) (err error) {
-	if err = conn.MysqlDB.Order("updated_at desc").Offset(pageSize * (page - 1)).Limit(pageSize).Find(todo).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func getTodo(todo *Todo, id string) (err error) {
-	if err := conn.MysqlDB.Where("id = ?", id).First(todo).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func createTodo(todo *Todo) (err error) {
-	if err = conn.MysqlDB.Create(todo).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func updateTodo(todo *Todo) (rows int64, err error) {
-	result := conn.MysqlDB.Model(&todo).Updates(Todo{Title: todo.Title, Description: todo.Description, GormModel: conn.GormModel{UpdatedAt: time.Now()}})
-	return result.RowsAffected, result.Error
-}
-
-func deleteTodo(todo *Todo, id uint64) (rows int64, err error) {
-	result := conn.MysqlDB.Where("id = ?", id).Delete(todo)
-	return result.RowsAffected, result.Error
 }

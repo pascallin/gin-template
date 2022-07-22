@@ -2,51 +2,84 @@ package conn
 
 import (
 	"fmt"
-	"os"
+	"sync"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
-	"github.com/joho/godotenv"
+	log "github.com/sirupsen/logrus"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	// "gorm.io/gorm/logger"
+
+	"github.com/pascallin/gin-template/config"
 )
 
-const (
-	mysqlConnStringTemplate = "%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local"
-)
-
-type GormModel struct {
-	ID        uint64     `gorm:"primary_key" json:"id"`
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	DeletedAt *time.Time `sql:"index" json:"deletedAt"`
+type MysqlConn interface {
+	GetMysqlDB() *gorm.DB
 }
 
-var MysqlDB *gorm.DB
+var (
+	mysqlDB *gorm.DB
+	mOnce   sync.Once
+)
 
-func init() {
-	// load .env
-	godotenv.Load()
+func GetMysqlDB() *gorm.DB {
+	// newLogger := logger.New(
+	// 	newLogrusWriter(), // io writer
+	// 	logger.Config{
+	// 		SlowThreshold:             time.Second,   // Slow SQL threshold
+	// 		LogLevel:                  logger.Silent, // Log level
+	// 		IgnoreRecordNotFoundError: true,          // Ignore ErrRecordNotFound error for logger
+	// 		Colorful:                  false,         // Disable color
+	// 	},
+	// )
+	mOnce.Do(func() {
+		db, err := openMysql()
+		if err != nil {
+			log.Error(err)
+		}
+		mysqlDB = db
+	})
 
-	db, err := gorm.Open("mysql", getMysqlConnURL())
-	db.LogMode(true)
+	return mysqlDB
+}
+
+func openMysql() (*gorm.DB, error) {
+	c := config.GetMysqlConfig()
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", c.User, c.Password, c.Host, c.Port, c.Database)
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		// Logger: logger.Default.LogMode(logger.Warn),
+	})
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	MysqlDB = db
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+
+	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
+	sqlDB.SetMaxIdleConns(10)
+	// SetMaxOpenConns sets the maximum number of open connections to the database.
+	sqlDB.SetMaxOpenConns(100)
+	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
+	sqlDB.SetConnMaxLifetime(time.Hour)
+
+	log.Info("Mysql database connected")
+
+	return db, nil
 }
 
-func getMysqlConnURL() string {
-	host := os.Getenv("MYSQL_HOST")
-	port := os.Getenv("MYSQL_PORT")
-	user := os.Getenv("MYSQL_USER")
-	dbName := os.Getenv("MYSQL_DATABASE")
-	password := os.Getenv("MYSQL_PASSWORD")
-	return fmt.Sprintf(
-		mysqlConnStringTemplate,
-		user,
-		password,
-		host,
-		port,
-		dbName,
-	)
+type LogrusWriter struct {
+	mlog *log.Logger
+}
+
+func (m *LogrusWriter) Printf(format string, v ...interface{}) {
+	logstr := fmt.Sprintf(format, v...)
+	m.mlog.Info(logstr)
+}
+
+func newLogrusWriter() *LogrusWriter {
+	log := log.New()
+	return &LogrusWriter{mlog: log}
 }

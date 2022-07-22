@@ -1,31 +1,14 @@
 package controller
 
 import (
-	"context"
-	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pascallin/gin-template/conn"
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/pascallin/gin-template/service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type TaskController struct{}
-
-type Task struct {
-	ID    primitive.ObjectID `bson:"_id" json:"id"`
-	Title string             `bson:"title" json:"title"`
-}
-
-func (t *Task) New() *Task {
-	return &Task{
-		ID:    primitive.NewObjectID(),
-		Title: t.Title,
-	}
-}
 
 type CreateTaskInput struct {
 	Title string `binding:"required"`
@@ -54,7 +37,7 @@ func (t TaskController) GetTasks(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err, tasks := getTasksData(findTasksCond{Title: input.Title}, input.Page, input.PageSize)
+	tasks, err := service.GetTasksData(service.FindTasksCond{Title: input.Title}, input.Page, input.PageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -77,7 +60,7 @@ func (t TaskController) GetTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result := getTaskById(id)
+	result := service.GetTaskById(id)
 	if result == nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -101,7 +84,7 @@ func (t TaskController) CreateTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err, id := createTaskData(&task)
+	id, err := service.CreateTaskData(task.Title)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -128,7 +111,7 @@ func (t TaskController) UpdateTask(c *gin.Context) {
 	}
 	var task UpdateTaskInput
 	c.BindJSON(&task)
-	err, result := updateTaskData(id, &task)
+	result, err := service.UpdateTaskData(id, task.Title)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -156,99 +139,10 @@ func (t TaskController) DeleteTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err = removeTaskData(id)
+	err = service.RemoveTaskData(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "okay"})
-}
-
-type findTasksCond struct {
-	Title string `json:"title"`
-}
-
-func getTasksData(cond findTasksCond, page uint64, pageSize uint64) (error, []*Task) {
-	var results []*Task
-	ctx := context.Background()
-
-	condition := bson.D{}
-	if cond.Title != "" {
-		condition = append(condition, bson.E{"title", primitive.Regex{Pattern: cond.Title, Options: "i"}})
-	}
-
-	findOptions := options.Find()
-	findOptions.SetLimit(int64(pageSize))
-	findOptions.SetSkip(int64((page - 1) * pageSize))
-	findOptions.SetSort(bson.M{"title": -1})
-
-	cur, err := conn.MongoDB.DB.Collection("tasks").Find(ctx, condition, findOptions)
-	if err != nil {
-		return err, results
-	}
-	fmt.Printf("cur: %+v\n", cur)
-	// Close the cursor once finished
-	defer cur.Close(ctx)
-	for cur.Next(ctx) {
-		// create a value into which the single document can be decoded
-		var task Task
-		err := cur.Decode(&task)
-		if err != nil {
-			return err, results
-		}
-		results = append(results, &task)
-	}
-	fmt.Printf("Found multiple documents (array of pointers): %+v\n", results)
-	return nil, results
-}
-
-func getTaskById(id primitive.ObjectID) *Task {
-	var task Task
-	condition := bson.M{"_id": id}
-	err := conn.MongoDB.DB.Collection("tasks").FindOne(context.Background(), condition).Decode(&task)
-	if err != nil {
-		return nil
-	}
-	return &task
-}
-
-func createTaskData(input *CreateTaskInput) (error, primitive.ObjectID) {
-	task := Task{
-		ID:    primitive.NewObjectID(),
-		Title: input.Title,
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	insertResult, err := conn.MongoDB.DB.Collection("tasks").InsertOne(ctx, task)
-	if err != nil {
-		return err, primitive.NilObjectID
-	}
-	return nil, insertResult.InsertedID.(primitive.ObjectID)
-}
-
-func updateTaskData(id primitive.ObjectID, input *UpdateTaskInput) (error, *Task) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	filter := bson.D{{"_id", id}}
-	update := bson.M{
-		"$set": bson.M{"title": input.Title},
-	}
-	after := options.After
-	opt := options.FindOneAndUpdateOptions{
-		ReturnDocument: &after,
-	}
-	fmt.Printf("%v\n", filter)
-	fmt.Printf("%v\n", update)
-
-	var updatedTask Task
-	err := conn.MongoDB.DB.Collection("tasks").FindOneAndUpdate(ctx, filter, update, &opt).Decode(&updatedTask)
-	if err != nil {
-		return err, nil
-	}
-	return nil, &updatedTask
-}
-
-func removeTaskData(id primitive.ObjectID) error {
-	_, err := conn.MongoDB.DB.Collection("tasks").DeleteOne(context.Background(), bson.D{{Key: "_id", Value: id}})
-	return err
 }

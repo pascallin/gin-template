@@ -2,16 +2,14 @@ package conn
 
 import (
 	"context"
-	"fmt"
-	"os"
+	"sync"
 	"time"
 
-	"github.com/joho/godotenv"
+	"github.com/pascallin/gin-template/config"
 	"github.com/sirupsen/logrus"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
-
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 const (
@@ -19,43 +17,43 @@ const (
 	connectTimeout = 5
 )
 
-type MongoDatabase struct {
-	DB      *mongo.Database
-	Client  *mongo.Client
-	Context context.Context
+type Mongo struct {
+	DB     *mongo.Database
+	Client *mongo.Client
 }
 
-var MongoDB *MongoDatabase
+var (
+	mgOnce sync.Once
+	_mongo *Mongo
+)
 
-func init() {
-	// load .env
-	godotenv.Load()
+func GetMongo(ctx context.Context) *Mongo {
+	mgOnce.Do(func() {
+		connectionURI := config.GetMongoConfig().URI
 
-	username := os.Getenv("MONGODB_USERNAME")
-	password := os.Getenv("MONGODB_PASSWORD")
-	clusterEndpoint := os.Getenv("MONGODB_ENDPOINT")
+		opts := options.Client().ApplyURI(connectionURI).SetConnectTimeout(connectTimeout)
+		client, err := mongo.Connect(ctx, opts)
+		if err != nil {
+			panic(err)
+		}
 
-	connectionURI := fmt.Sprintf("mongodb://%s:%s@%s", username, password, clusterEndpoint)
-	dbname := os.Getenv("MONGODB_DATABASE")
-	ctx, cancel := context.WithTimeout(context.Background(), connectTimeout*time.Second)
-	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(connectionURI))
-	if err != nil {
-		logrus.Error(err)
-		panic(err)
-	}
-	ctxping, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	err = client.Ping(ctxping, readpref.Primary())
-	if err != nil {
-		logrus.Error(err)
-		panic(err)
-	}
-	db := client.Database(dbname)
-	MongoDB = &MongoDatabase{DB: db, Client: client, Context: ctx}
-	fmt.Println("mongodb connected")
+		db := client.Database(config.GetMongoConfig().DATABASE)
+
+		_mongo = &Mongo{DB: db, Client: client}
+	})
+
+	return _mongo
 }
 
-func (d *MongoDatabase) Close() {
-	d.Client.Disconnect(d.Context)
+func Ping() string {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	mongo := GetMongo(ctx)
+	err := mongo.Client.Ping(ctx, readpref.Primary())
+	if err != nil {
+		logrus.Error(err)
+		return "fail"
+	}
+
+	return "ok"
 }
