@@ -19,14 +19,14 @@ func Listen() {
 
 	conn, err := amqp.Dial(conn.GetRabbitMQConnURL())
 	if err != nil {
-		log.Error("%s: %s", err, "Failed to connect to RabbitMQ")
+		log.Error("Failed to connect to RabbitMQ", err)
 		return
 	}
 	defer conn.Close()
 
 	ch, err := conn.Channel()
 	if err != nil {
-		log.Error("%s: %s", err, "Failed to open a channel")
+		log.Error("Failed to open a channel", err)
 		return
 	}
 	defer ch.Close()
@@ -40,7 +40,7 @@ func Listen() {
 		nil,        // arguments
 	)
 	if err != nil {
-		log.Error("%s: %s", err, "Failed to declare a queue")
+		log.Error("Failed to declare a queue", err)
 		return
 	}
 
@@ -54,7 +54,7 @@ func Listen() {
 		nil,    // args
 	)
 	if err != nil {
-		log.Error("%s: %s", err, "Failed to register a consumer")
+		log.Error("Failed to register a consumer", err)
 		return
 	}
 
