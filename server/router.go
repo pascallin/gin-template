@@ -28,21 +28,23 @@ func NewRouter() *gin.Engine {
 	publicPath := filepath.Join(".", "public", "*.tmpl")
 	router.LoadHTMLGlob(publicPath)
 
-	v1 := router.Group("v1", gin.Logger(), middleware.AuthMiddleware())
+	v1 := router.Group("/api/v1", gin.Logger(), middleware.I18n(), middleware.ErrorHandler())
 	{
 		userGroup := v1.Group("user")
 		{
 			user := new(controller.AuthController)
 			userGroup.POST("/login", user.LoginRoute)
 			userGroup.POST("/register", user.RegisterRoute)
-			userGroup.PATCH("/password", user.PatchPasswordRoute)
+			userGroup.PATCH("/password", middleware.AuthMiddleware(), user.PatchPasswordRoute)
 		}
 		fileGroup := v1.Group("files")
+		fileGroup.Use(middleware.AuthMiddleware())
 		{
 			file := new(controller.FileController)
 			fileGroup.POST("/upload/xlsx", file.UploadFile)
 		}
 		taskGroup := v1.Group("task")
+		taskGroup.Use(middleware.AuthMiddleware())
 		{
 			task := new(controller.TaskController)
 			taskGroup.GET("/", task.GetTasks)
@@ -52,6 +54,7 @@ func NewRouter() *gin.Engine {
 			taskGroup.DELETE("/:id", task.DeleteTask)
 		}
 		todoGroup := v1.Group("todo")
+		todoGroup.Use(middleware.AuthMiddleware())
 		{
 			todo := new(controller.TodoController)
 			todoGroup.GET("/", todo.GetTodos)
@@ -63,11 +66,6 @@ func NewRouter() *gin.Engine {
 		mqGroup := v1.Group("mq")
 		{
 			mqGroup.POST("/", controller.SendHelloRoute)
-		}
-		verifyGroup := v1.Group("verify")
-		{
-			verifyCtrl := new(controller.VerifyController)
-			verifyGroup.POST("rtmp", verifyCtrl.AuthOnly)
 		}
 	}
 	return router

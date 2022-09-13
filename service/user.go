@@ -17,21 +17,21 @@ import (
 	"github.com/pascallin/gin-template/model"
 )
 
-func Login(username string, password string) (err error, token string) {
-	err, user := FindUserByUserName(username)
+func Login(username string, password string) (token string, err error) {
+	user, err := FindUserByUserName(username)
 	if err != nil {
-		return err, ""
+		return "", err
 	}
 	p := md5.Sum([]byte(password))
 	if user.Password != fmt.Sprintf("%x", p) {
-		return errors.New("wrong password"), ""
+		return "", errors.New("wrong password")
 	}
 
 	claims := model.CustomerClaims{
 		Username: user.Username,
 		StandardClaims: jwt.StandardClaims{
 			Audience:  "",
-			ExpiresAt: 15000,
+			ExpiresAt: time.Now().Add(3600 * time.Second).Unix(),
 			Id:        "",
 			IssuedAt:  0,
 			Issuer:    "test",
@@ -43,9 +43,9 @@ func Login(username string, password string) (err error, token string) {
 	gentoken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := gentoken.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
-		return errors.New("generate token error: " + err.Error()), ""
+		return "", errors.New("generate token error: " + err.Error())
 	}
-	return nil, tokenString
+	return tokenString, nil
 }
 
 func CreteUser(username, password, nickname string) (error, primitive.ObjectID) {
@@ -98,13 +98,13 @@ func UpdateUserPassword(username, password, newPassword string) error {
 	return nil
 }
 
-func FindUserByUserName(username string) (error, *model.User) {
+func FindUserByUserName(username string) (*model.User, error) {
 	user := &model.User{}
 	ctx := context.TODO()
 	err := conn.GetMongo(ctx).DB.Collection("users").
 		FindOne(context.Background(), bson.M{"username": username}).Decode(user)
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
-	return nil, user
+	return user, nil
 }

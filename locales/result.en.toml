@@ -1,0 +1,3 @@
+SUCCEED = "request succeed"
+PARAM_ERROR = "parameter error"
+SYSTEM_ERROR = "system error"

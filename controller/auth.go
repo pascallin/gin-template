@@ -1,13 +1,12 @@
 package controller
 
 import (
-	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/pascallin/gin-template/service"
+	"github.com/pascallin/gin-template/types"
 )
 
 type AuthController struct{}
@@ -32,6 +31,8 @@ type PatchPasswordRequest struct {
 // @Param user body UsernameAndPasswordRequest true "register"
 // @Produce  json
 // @Success 200 {object} model.User
+// @Success 400 {object} types.AppResponse
+// @Success 500 {object} types.AppResponse
 // @Router /user/register [post]
 func (a AuthController) RegisterRoute(ctx *gin.Context) {
 	var request RegisterRequest
@@ -54,18 +55,18 @@ func (a AuthController) RegisterRoute(ctx *gin.Context) {
 // @Param user body UsernameAndPasswordRequest true "login"
 // @Produce  json
 // @Success 200 {object} model.User
+// @Success 400 {object} types.AppResponse
+// @Success 500 {object} types.AppResponse
 // @Router /user/login [post]
 func (a AuthController) LoginRoute(ctx *gin.Context) {
-	body, _ := ioutil.ReadAll(ctx.Request.Body)
-	fmt.Println(string(body))
 	var request UsernameAndPasswordRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		ctx.Error(types.ErrParam)
+		ctx.Abort()
 	}
-	err, token := service.Login(request.Username, request.Password)
+	token, err := service.Login(request.Username, request.Password)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, types.NewAppResponse(types.SystemErrorCode, err.Error()))
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"token": token})
@@ -77,7 +78,10 @@ func (a AuthController) LoginRoute(ctx *gin.Context) {
 // @Accept  json
 // @Param user body PatchPasswordRequest true "login"
 // @Produce  json
+// @security  ApiKeyAuth
 // @Success 200 {object} model.User
+// @Success 400 {object} types.AppResponse
+// @Success 500 {object} types.AppResponse
 // @Router /user/password [patch]
 func (a AuthController) PatchPasswordRoute(ctx *gin.Context) {
 	var request PatchPasswordRequest
