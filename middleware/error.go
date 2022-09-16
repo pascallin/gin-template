@@ -21,7 +21,7 @@ func ErrorHandler() gin.HandlerFunc {
 				c.JSON(http.StatusBadRequest, types.NewAppResponse(Err.Code, Err.Message))
 				return
 			default:
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				c.JSON(http.StatusInternalServerError, types.NewAppResponse(Err.Code, Err.Message))
 				return
 			}
 		}

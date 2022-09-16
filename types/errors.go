@@ -23,10 +23,10 @@ func (e *AppError) Error() string {
 	return e.Message
 }
 
-func NewAppError(statusCode uint, Code string, msg string) *AppError {
+func NewAppError(statusCode uint, code string, msg string) *AppError {
 	return &AppError{
 		StatusCode: statusCode,
-		Code:       Code,
+		Code:       code,
 		Message:    msg,
 	}
 }
