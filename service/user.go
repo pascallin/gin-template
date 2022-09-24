@@ -9,22 +9,41 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/pascallin/gin-template/conn"
 	"github.com/pascallin/gin-template/model"
+	"github.com/pascallin/gin-template/types"
+)
+
+type UserService interface {
+	Login(username string, password string) (token string, err error)
+	CreteUser(username, password, nickname string) (primitive.ObjectID, error)
+	UpdateUserPassword(username, password, newPassword string) error
+	FindUserByUserName(username string) (*model.User, error)
+}
+
+var (
+	ErrWrongPassword = types.NewAppError(500, "WRONG_PASSWORD")
+	ErrUserNotFound  = types.NewAppError(500, "USER_NOT_FOUND")
 )
 
 func Login(username string, password string) (token string, err error) {
 	user, err := FindUserByUserName(username)
+
 	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return "", ErrUserNotFound
+		}
 		return "", err
 	}
 	p := md5.Sum([]byte(password))
 	if user.Password != fmt.Sprintf("%x", p) {
-		return "", errors.New("wrong password")
+		return "", ErrWrongPassword
 	}
 
 	claims := model.CustomerClaims{
@@ -48,11 +67,13 @@ func Login(username string, password string) (token string, err error) {
 	return tokenString, nil
 }
 
-func CreteUser(username, password, nickname string) (error, primitive.ObjectID) {
-	_, existUser := FindUserByUserName(username)
-	fmt.Println(existUser)
+func CreteUser(username, password, nickname string) (primitive.ObjectID, error) {
+	existUser, err := FindUserByUserName(username)
+	if err != nil && err != mongo.ErrNoDocuments {
+		return primitive.NilObjectID, err
+	}
 	if existUser != nil {
-		return errors.New("username existed"), primitive.NilObjectID
+		return primitive.NilObjectID, errors.New("username existed")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -63,9 +84,9 @@ func CreteUser(username, password, nickname string) (error, primitive.ObjectID) 
 		Password: fmt.Sprintf("%x", p),
 	})
 	if err != nil {
-		return err, primitive.NilObjectID
+		return primitive.NilObjectID, err
 	}
-	return nil, insertResult.InsertedID.(primitive.ObjectID)
+	return insertResult.InsertedID.(primitive.ObjectID), nil
 }
 
 func UpdateUserPassword(username, password, newPassword string) error {

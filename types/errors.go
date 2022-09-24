@@ -1,20 +1,13 @@
 package types
 
-import "errors"
-
 const (
 	SucceedCode     = "SUCCEED"
 	ParamErrorCode  = "PARAM_ERROR"
 	SystemErrorCode = "SYSTEM_ERROR"
 )
 
-var (
-	ErrParam  = errors.New(ParamErrorCode)
-	ErrSystem = errors.New(SystemErrorCode)
-)
-
 type AppError struct {
-	StatusCode uint   `json:"-"`
+	StatusCode int    `json:"-"`
 	Code       string `json:"code"`
 	Message    string `json:"message"`
 }
@@ -23,10 +16,14 @@ func (e *AppError) Error() string {
 	return e.Message
 }
 
-func NewAppError(statusCode uint, code string, msg string) *AppError {
+func NewAppError(statusCode int, code string) *AppError {
 	return &AppError{
 		StatusCode: statusCode,
 		Code:       code,
-		Message:    msg,
 	}
 }
+
+var (
+	ErrParam  = NewAppError(400, ParamErrorCode)
+	ErrSystem = NewAppError(500, SystemErrorCode)
+)

@@ -40,7 +40,7 @@ func (a AuthController) RegisterRoute(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err, id := service.CreteUser(request.Username, request.Password, request.Username)
+	id, err := service.CreteUser(request.Username, request.Password, request.Username)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -63,10 +63,12 @@ func (a AuthController) LoginRoute(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.Error(types.ErrParam)
 		ctx.Abort()
+		return
 	}
 	token, err := service.Login(request.Username, request.Password)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, types.NewAppResponse(types.SystemErrorCode, err.Error()))
+		ctx.Error(err)
+		ctx.Abort()
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"token": token})

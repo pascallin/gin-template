@@ -1,3 +1,6 @@
 SUCCEED = "request succeed"
 PARAM_ERROR = "parameter error"
 SYSTEM_ERROR = "system error"
+
+WRONG_PASSWORD = "wrong password"
+USER_NOT_FOUND = "could not found user"

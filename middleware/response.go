@@ -17,10 +17,8 @@ var bundle *i18n.Bundle
 func init() {
 	bundle = i18n.NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-	// No need to load active.en.toml since we are providing default translations.
-	// bundle.MustLoadMessageFile("active.en.toml")
 	bundle.MustLoadMessageFile("./locales/result.en.toml")
-	bundle.MustLoadMessageFile("./locales/result.zh.toml")
+	// bundle.MustLoadMessageFile("./locales/result.zh.toml")
 }
 
 type bodyLogWriter struct {
