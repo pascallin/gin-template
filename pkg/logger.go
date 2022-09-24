@@ -3,6 +3,7 @@ package pkg
 import (
 	"path"
 	"runtime"
+	"fmt"
 
 	log "github.com/sirupsen/logrus"
 
@@ -20,8 +21,9 @@ func SetupLogger() {
 		DisableColors:   true,
 		TimestampFormat: "2006-01-02 15:03:04",
 		CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
-			fileName := path.Base(frame.File)
-			return frame.Function, fileName
+			fileName := fmt.Sprintf("%s:%d", path.Base(frame.File), frame.Line)
+			funcName := path.Base(frame.Function)
+			return funcName, fileName
 		},
 	})
 }
