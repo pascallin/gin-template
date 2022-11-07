@@ -11,6 +11,13 @@ import (
 
 type FileController struct{}
 
+// @Summary UploadFile
+// @Description UploadFile
+// @Tags file
+// @Accept multipart/form-data
+// @Param file formData file true "file"
+// @Produce  json
+// @Router /upload [post]
 func (f FileController) UploadFile(c *gin.Context) {
 	// single file
 	file, _ := c.FormFile("file")
